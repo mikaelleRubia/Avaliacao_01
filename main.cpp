@@ -38,6 +38,12 @@ int Menu_Passageiros();
 int Menu_Roteiros();
 int Menu_Embarque();
 
+// Funções do sistema de Passageiros
+Passageiro gerar_passageiro();
+void remover_passageiro(vector<Passageiro> &passageiros);
+void inserir_passageiro(vector<Passageiro> &passageiros, Passageiro p);
+// Funções do sistema de Roteiros
+// Funções do sistema de Embarque
 void limpaTela_palse();
 void palse();
 void limpaTela();
