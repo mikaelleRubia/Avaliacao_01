@@ -2,6 +2,9 @@
 #include <string>
 #include <vector>
 #include <regex>
+#include <sstream>
+#include <ctime>
+#include <iomanip>
 
 
 using namespace std;
@@ -41,6 +44,7 @@ int Menu_Roteiros();
 int Menu_Embarque();
 bool valida_cpf(string& cpf);
 bool valida_data_nascimento(string& data_nascimento);
+bool valida_idade(const string& dataNascimento);
 bool cpf_cadastrado(vector <Passageiro> &passageiro, string &cpf);
 void incluir_passageiro(vector <Passageiro> &passageiro);
 
@@ -268,6 +272,30 @@ bool valida_cpf(string& cpf){
 
 };
 
+bool valida_idade(const string& dataNascimento){
+    time_t t = time(nullptr);
+    tm tmAtual = *localtime(&t);
+
+    tm tmNascimento = {};
+    istringstream ss(dataNascimento);
+    ss >> get_time(&tmNascimento, "%d/%m/%Y");
+
+
+    int idade = tmAtual.tm_year - tmNascimento.tm_year;
+
+    if (tmNascimento.tm_mon > tmAtual.tm_mon ||
+        (tmNascimento.tm_mon == tmAtual.tm_mon && tmNascimento.tm_mday > tmAtual.tm_mday)) {
+        idade--;
+    }
+    
+    if (idade >= 16) {
+        return  true;
+    };
+      
+    return false;
+}
+
+
 bool valida_data_nascimento(string& data_nascimento) {
         /**
          * valida_data_nascimento: Esta função valida o data de nascimento utilizando um regex.
@@ -299,6 +327,7 @@ void incluir_passageiro(vector <Passageiro> &passageiro){
 
     Passageiro passageiro_novo;
     string dt_nascimento , cpf, nome;
+    int num_autorizacao;
     bool validacao_cpf, validacao_data;
     char resposta;
 
@@ -323,10 +352,18 @@ void incluir_passageiro(vector <Passageiro> &passageiro){
             //chama funçaõ para validação
             validacao_data = valida_data_nascimento(dt_nascimento);
 
+            if(!valida_idade(dt_nascimento)) {
+                cout << "O passageiro "<< nome << "é menor de idade, então preciso que informa o numero de autorizacao:" <<endl;
+                cin >> num_autorizacao;
+            }
+
+
+
             if(validacao_cpf && validacao_data){
                 passageiro_novo.cpf= cpf;
                 passageiro_novo.dt_nascimento = dt_nascimento;
                 passageiro_novo.nome =nome;
+                passageiro_novo.num_Autorizacao = num_autorizacao > 0 ? num_autorizacao : 0;
 
                 passageiro.push_back(passageiro_novo);
             }
@@ -338,7 +375,13 @@ void incluir_passageiro(vector <Passageiro> &passageiro){
         cout << "Deseja Adicionar outro passageiro (s/n)?" <<endl;
         cin >>resposta;
 
-    }while(resposta =='s') ;    
+    }while(resposta =='s') ; 
+
+    // for para teste.
+    // for (int i = 0; i < passageiro.size(); i++)
+    // {
+    //     cout << passageiro[i].cpf << " ------------------- " << passageiro[i].nome << " ------------------ " << passageiro[i].dt_nascimento <<" ------------"<< passageiro[i].num_Autorizacao << endl;
+    // }   
 
   
 }
