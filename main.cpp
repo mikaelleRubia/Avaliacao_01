@@ -41,7 +41,7 @@ int Menu_Roteiros();
 int Menu_Embarque();
 bool valida_cpf(string& cpf);
 bool valida_data_nascimento(string& data_nascimento);
-bool cpf_cadastrodo(vector <Passageiro> &passageiro, string &cpf);
+bool cpf_cadastrado(vector <Passageiro> &passageiro, string &cpf);
 void incluir_passageiro(vector <Passageiro> &passageiro);
 
 void limpaTela_palse();
@@ -280,7 +280,7 @@ bool valida_data_nascimento(string& data_nascimento) {
 };
 
 
-bool cpf_cadastrodo(vector <Passageiro> &passageiro, string &cpf){
+bool cpf_cadastrado(vector <Passageiro> &passageiro, string &cpf){
     int tamanho = passageiro.size();
 
     if (passageiro.size() == 0) return false;
@@ -299,7 +299,7 @@ void incluir_passageiro(vector <Passageiro> &passageiro){
 
     Passageiro passageiro_novo;
     string dt_nascimento , cpf, nome;
-    bool validacao_cpf, validacao_data, cpf_sem_cadastro, cpf_cadastrado; 
+    bool validacao_cpf, validacao_data;
     char resposta;
 
     do{
@@ -310,7 +310,7 @@ void incluir_passageiro(vector <Passageiro> &passageiro){
             validacao_cpf = valida_cpf(cpf);
 
             // verifica se o CPF já está cadastrado 
-            if(cpf_cadastrodo(passageiro, cpf)) {
+            if(cpf_cadastrado(passageiro, cpf)) {
                 cout << "CPF já está cadastrado, mas você pode adicionar outro passageiro!!!"  <<endl;
                 break;
             }
