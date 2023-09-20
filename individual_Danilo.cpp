@@ -17,6 +17,7 @@ struct Passageiro
 int Menu();
 void incluirPassageiros(vector<Passageiro>& passageiros);
 void listarPassageiros(vector<Passageiro>& passageiros);
+void excluirPassageiros(vector<Passageiro>& passageiros);
 
 void limpaTela_palse();
 void palse();
@@ -51,14 +52,14 @@ int main()
             incluirPassageiros(passageiros);
             break;
         case 2:
-            listarPassageiros(passageiros);
-            palse();
+            excluirPassageiros(passageiros);
             break;
-        case 3:
+        case 3: 
             // chamada da função alterar passageiros
             break;
         case 4:
-            // chamada da função listar passageiros
+            listarPassageiros(passageiros);
+            palse();
             break;
         case 5:
             // chamada da função localizar passageiros
@@ -96,7 +97,7 @@ int Menu()
     cout << "############## Menu ##############\n\n";
     cout << "1 - Incluir \n";
     cout << "2 - Excluir\n";
-    cout << "3 - Alterar CPF";
+    cout << "3 - Alterar CPF\n";
     cout << "4 - Listar\n";
     cout << "5 - Localizar\n";
     cout << "0 - Sair\n";
@@ -129,7 +130,7 @@ void incluirPassageiros(vector<Passageiro>& passageiros)
         cout << " Digite a Data de Nascimento do Passageiro: " << endl;
         cin >> passageiro.dt_nascimento;
 
-        cout << "Número de Autorização do Responsável: ";
+        cout << "Numero de Autorizacao do Responsavel: ";
         cin >> passageiro.num_Autorizacao;
 
         passageiros.push_back(passageiro);
@@ -157,4 +158,27 @@ void listarPassageiros(vector<Passageiro>& passageiros) {
             cout << "-----------------------------" << endl;
         }
     }
+}
+
+void excluirPassageiros(vector<Passageiro>& passageiros) {
+    string cpf;
+    char res;
+
+    cout << "Digite o CPF do passageiro a ser excluído: ";
+    cin >> cpf;
+
+    for (auto it = passageiros.begin(); it != passageiros.end();it++) {
+        if (it->cpf == cpf) {
+            cout << "Realmente deseja exclui o Passageiro '" << it->nome << "' (s/n)?" << endl;
+            cin >> res;
+            if(res=='s'){
+                 passageiros.erase(it);
+                cout << "Passageiro excluído com sucesso!" << endl;
+                return;
+            }
+           
+        }
+    }
+
+    cout << "Passageiro com CPF " << cpf << " não encontrado." << endl;
 }
