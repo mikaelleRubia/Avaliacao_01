@@ -1,6 +1,8 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <regex>
+
 
 using namespace std;
 #define ASSENTOS 40;
@@ -37,6 +39,10 @@ int Menu();
 int Menu_Passageiros();
 int Menu_Roteiros();
 int Menu_Embarque();
+bool valida_cpf(string& cpf);
+bool valida_data_nascimento(string& data_nascimento);
+bool cpf_cadastrodo(vector <Passageiro> &passageiro, string &cpf);
+void incluir_passageiro(vector <Passageiro> &passageiro);
 
 void limpaTela_palse();
 void palse();
@@ -75,7 +81,7 @@ int main()
                 switch (opcao2)
                 {
                 case 1:
-                    // chamada da função inserir passageiros
+                    incluir_passageiro(passageiros);
                     break;
                 case 2:
                     // chamada da função remover passageiros
@@ -247,4 +253,92 @@ int Menu_Embarque(){
     cin >> opcao;
 
     return opcao;
+};
+
+
+bool valida_cpf(string& cpf){
+        /**
+         * valida_cpf: Esta função valida o cpf utilizando um regex.
+         * Paramentro cpf do tipo string .
+         * retorna true ou false.
+         */
+    regex datePattern(R"(\d{3}\.\d{3}\.\d{3}-\d{2}|\d{11})");
+
+    return regex_match(cpf, datePattern);
+
+};
+
+bool valida_data_nascimento(string& data_nascimento) {
+        /**
+         * valida_data_nascimento: Esta função valida o data de nascimento utilizando um regex.
+         * Paramentro data_nascimento do tipo string .
+         * retorna true ou false.
+         */
+    regex datePattern(R"(\d{2}/\d{2}/\d{4})");
+
+    return regex_match(data_nascimento, datePattern);
+};
+
+
+bool cpf_cadastrodo(vector <Passageiro> &passageiro, string &cpf){
+    int tamanho = passageiro.size();
+
+    if (passageiro.size() == 0) return false;
+
+    for( int i = 0; i < tamanho; i++){
+        if(cpf == passageiro[i].cpf){
+            return true;
+        };
+    };    
+    return false;
+
+};
+
+
+void incluir_passageiro(vector <Passageiro> &passageiro){
+
+    Passageiro passageiro_novo;
+    string dt_nascimento , cpf, nome;
+    bool validacao_cpf, validacao_data, cpf_sem_cadastro, cpf_cadastrado; 
+    char resposta;
+
+    do{
+        do{
+            cout << "CPF do passageiro" << endl;
+            cin >> cpf;
+            //chama funçaõ para validação
+            validacao_cpf = valida_cpf(cpf);
+
+            // verifica se o CPF já está cadastrado 
+            if(cpf_cadastrodo(passageiro, cpf)) {
+                cout << "CPF já está cadastrado, mas você pode adicionar outro passageiro!!!"  <<endl;
+                break;
+            }
+            
+            cout << "Nome do passageiro" <<endl;
+            cin >> nome;
+
+            cout << "Data Nascimento do passageiro(dd/mm/yyyy)" <<endl;
+            cin >>dt_nascimento;
+            //chama funçaõ para validação
+            validacao_data = valida_data_nascimento(dt_nascimento);
+
+            if(validacao_cpf && validacao_data){
+                passageiro_novo.cpf= cpf;
+                passageiro_novo.dt_nascimento = dt_nascimento;
+                passageiro_novo.nome =nome;
+
+                passageiro.push_back(passageiro_novo);
+            }
+            else{
+                cout << "Erro ao informar seu dados, por favor verifique seu dados e ensira novamente!!!"  <<endl;
+            }
+        }while ( !(validacao_cpf && validacao_data));
+
+        cout << "Deseja Adicionar outro passageiro (s/n)?" <<endl;
+        cin >>resposta;
+
+    }while(resposta =='s') ;    
+
+  
 }
