@@ -16,7 +16,7 @@ struct Passageiro
 
 int Menu();
 void incluirPassageiros(vector<Passageiro>& passageiros);
-
+void listarPassageiros(vector<Passageiro>& passageiros);
 
 void limpaTela_palse();
 void palse();
@@ -51,7 +51,8 @@ int main()
             incluirPassageiros(passageiros);
             break;
         case 2:
-
+            listarPassageiros(passageiros);
+            palse();
             break;
         case 3:
             // chamada da função alterar passageiros
@@ -132,7 +133,7 @@ void incluirPassageiros(vector<Passageiro>& passageiros)
         cin >> passageiro.num_Autorizacao;
 
         passageiros.push_back(passageiro);
-        cout << "Passageiro incluído com sucesso!" << endl;
+        cout << "Passageiro incluido com sucesso!" << endl;
 
         cout << " Deseja Incluir outro passageiro (s/n)? " << endl;
         cin >> resposta;
@@ -140,3 +141,20 @@ void incluirPassageiros(vector<Passageiro>& passageiros)
     } while (resposta == 's');
 };
 
+void listarPassageiros(vector<Passageiro>& passageiros) {
+    if (passageiros.empty()) {
+        cout << "Nenhum passageiro cadastrado." << endl;
+    } else {
+       
+    cout << "====================================================================" << endl;
+    cout << "========================Lista de Passageiros===========================" << endl;
+    cout << "====================================================================" << endl;
+        for (const auto &passageiro : passageiros) {          
+            cout << "Nome: " << passageiro.nome << endl;
+            cout << "CPF: " << passageiro.cpf << endl;
+            cout << "Data de Nascimento: " << passageiro.dt_nascimento << endl;
+            cout << "Número de Autorização do Responsavel: " << passageiro.num_Autorizacao << endl;
+            cout << "-----------------------------" << endl;
+        }
+    }
+}
