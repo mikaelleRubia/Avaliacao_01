@@ -1,31 +1,39 @@
 #include <iostream>
-#include <string>
+#include <cstring>
 #include <vector>
-#include <regex>
-#include <sstream>
+#include <limits>
 #include <ctime>
-#include <iomanip>
-#include <algorithm>
-
 
 using namespace std;
-#define ASSENTOS 40;
+
+#define ASSENTOS 40
+#define MAIOR_IDADE 16
+#define ANOSMAXIMO 3 // Anos maximo para criação de Roteiros
+
+struct Data
+{
+    int dia;
+    int mes;
+    int ano;
+    string data = "";
+};
 
 struct Passageiro
 {
     string nome;
     string cpf;
-    string dt_nascimento;
-    int num_Autorizacao;
+    Data dt_nascimento;
+    int num_Autorizacao = 0;
+    int idade();
 };
 
-struct  Roteiro
+struct Roteiro
 {
     int codigo;
-    string data;
-    string hora;
+    Data data;
+    string Hora;
     string duracao;
-    string origem;
+    string origin;
     string destino;
 };
 
@@ -39,44 +47,55 @@ struct Embarca
     int duracao;
 };
 
-int menu();
-int menu_passageiros();
-int menu_roteiros();
-int menu_Embarque();
-bool valida_cpf(string& cpf);
-bool valida_data(string& data_nascimento);
-bool valida_idade(const string& dataNascimento);
-bool cpf_cadastrado(vector <Passageiro> &passageiro, string &cpf);
-void incluir_passageiro(vector <Passageiro> &passageiro);
-bool remove_cpf_index(vector <Passageiro> &passageiro, string elemento);
-void excluir_passageiro(vector <Passageiro> &passageiro);
-void dados_passageiro(vector<Passageiro> &vetorDePassageiros, const string &elemento);
-void alterar_dados(vector<Passageiro> &passageiro);
-void lista_passageiro(vector<Passageiro> &passageiro);
-void localiza_passageiro(vector<Passageiro> &passageiro);
+struct Ocorrencia{
+    string Descricao;
+    string data;
+    string hora;
+    string numero_Apolice;
+};
 
+int Menu();
+int Menu_Passageiros();
+int Menu_Alterar_Passageiro(Passageiro);
+int Menu_Roteiros();
+int Menu_Embarque();
+int Menu_Ocorrencia();
+int Menu_Alterar_Ocorrencia(Ocorrencia);
 
-//funções para roteiro
-void localiza_roteiro(vector <Roteiro> &roteiro);
-void alterar_roteiro(vector <Roteiro> &roteiro);
-void alterar_campos_roteiro(vector <Roteiro> &roteiro, Roteiro &roteiro_atualizado, int &codigo, bool &alter_data, bool &alter_codigo, bool &alter_hora, bool &alter_orig, bool &alter_dest, bool &alter_durat);
-void excluir_roteiro(vector <Roteiro> &roteiro);
-bool remove_roteiro(vector <Roteiro> &roteiro,  int codigo);
-void lista_roteiros(vector <Roteiro> &roteiro);
-void dados_roteiros(vector <Roteiro> &roteiro, int codigo);
-void incluir_roteiro(vector <Roteiro> &roteiro);
-bool codigo_roteiro_cadastrado(vector <Roteiro> &roteiro, int codigo);
-bool valida_destino_origem(string destino, string origem);
+// Funções do sistema de Passageiros
+Passageiro gerar_passageiro(vector<Passageiro> &);
+bool remover_passageiro(vector<Passageiro> &);
+void imprimir_passageiro(Passageiro);
+void listar_passageiros(vector<Passageiro> &);
+int localizar_passageiro(vector<Passageiro> &);
+void alterar_passageiro(vector<Passageiro> &);
 
+// Funções do sistema de Roteiros
+void Valida_Destino(Roteiro &);
+void Valida_Origem(Roteiro &);
+Roteiro gerar_Roteiro(vector<Roteiro> &);
+bool remover_Roteiro(vector<Roteiro> &);
+void imprimir_Roteiro(Roteiro);
+void listar_Roteiro(vector<Roteiro> &);
+int localizar_Roteiro(vector<Roteiro> &);
+void alterar_Roteiro(vector<Roteiro> &);
+// Funções do sistema de Embarque
 
-void limpa_tela_pause();
+// Funções de validação
+bool verifica_CPF(string cpf, vector<Passageiro> &passageiros);
+bool validarCPF(string cpf);
+bool verifica_codigo(int codigo, vector<Roteiro> roteiros);
+bool validarData(Data, bool);
+Data gera_data(bool);
+
+// Funções de utilidades
+void limpaTela_pause();
 void pause();
-void limpa_tela();
+void limpaTela();
+void limparBuffers();
 
 int main()
-
 {
-
     // Verifica o sistema operacional para não dar erro
     if (system("echo ''") != 0)
     {
@@ -88,70 +107,200 @@ int main()
         setlocale(LC_ALL, "Portuguese");
         system("cls");
     }
-    int opcao,opcao2;
+
+    // Variaveis de suporte
+    int opcao, opcao2, aux;
+    Passageiro aux_passageiro;
+    Roteiro aux_roteiro;
+    // vetores
     vector<Embarca> embarca;
-    vector<Roteiro> roteiro;
+    vector<Roteiro> roteiros;
     vector<Passageiro> passageiros;
 
     do
     {
-        limpa_tela();
-        opcao = menu();
+        limpaTela();
+        opcao = Menu();
         switch (opcao)
         {
         case 1:
-            do{
-                limpa_tela();
-                opcao2 = menu_passageiros();
-
+            do
+            {
+                limpaTela();
+                opcao2 = Menu_Passageiros();
+                limpaTela();
                 switch (opcao2)
                 {
                 case 1:
-                    incluir_passageiro(passageiros);
+                    // Criando um passageiro e adicionando no vetor
+                    aux_passageiro = gerar_passageiro(passageiros);
+                    passageiros.push_back(aux_passageiro);
+                    cout << "Passageiro cadastrado com sucesso !" << endl;
+                    limparBuffers();
+                    pause();
                     break;
                 case 2:
-                    excluir_passageiro(passageiros);
+                    // chamada da função remover passageiros
+                    if (passageiros.empty())
+                    {
+                        cout << "Nao ha passageiros cadastrados !" << endl;
+                    }
+                    else
+                    {
+                        if (remover_passageiro(passageiros))
+                        {
+                            cout << "Passageiro removido com sucesso !" << endl;
+                        }
+                        else
+                        {
+                            cout << "Erro ao remover passageiro !" << endl;
+                            cout << "CPF inexistente ou CPF digitado Errado !" << endl;
+                        }
+                    }
+                    limparBuffers();
+                    pause();
                     break;
                 case 3:
-                    alterar_dados(passageiros);
+                    // chamada da função alterar passageiro
+                    if (passageiros.empty())
+                    {
+                        cout << "Nao ha passageiros cadastrados !" << endl;
+                        limparBuffers();
+                        pause();
+                    }
+                    else
+                    {
+                        alterar_passageiro(passageiros);
+                    }
                     break;
                 case 4:
-                    lista_passageiro(passageiros);
+                    // chamada da função listar passageiros
+                    if (passageiros.empty())
+                    {
+                        cout << "Nao ha passageiros cadastrados !" << endl;
+                    }
+                    else
+                    {
+                        listar_passageiros(passageiros);
+                    }
+                    limparBuffers();
+                    pause();
                     break;
                 case 5:
-                    localiza_passageiro(passageiros);
+                    // chamada da função localizar passageiro
+                    if (passageiros.empty())
+                    {
+                        cout << "\nNao ha passageiros cadastrados !\n"
+                             << endl;
+                    }
+                    else
+                    {
+
+                        aux = localizar_passageiro(passageiros);
+
+                        cout << "\nPassageiro localizado segue os dados: \n"
+                             << endl;
+                        cout << "\n=======================================" << endl;
+                        imprimir_passageiro(passageiros[aux]);
+                        cout << "\n=======================================" << endl;
+                    }
+                    limparBuffers();
+                    pause();
                     break;
                 case 0:
                     break;
                 default:
                     cout << "Opção invalida !" << endl;
                     cout << "Por favor digite uma opcao valida !\n";
+                    limparBuffers();
+                    pause();
                     break;
                 }
 
             } while (opcao2 != 0);
             break;
         case 2:
-            do{
-                limpa_tela();
-                opcao2 = menu_roteiros();
-
+            do
+            {
+                limpaTela();
+                opcao2 = Menu_Roteiros();
+                limpaTela();
                 switch (opcao2)
                 {
                 case 1:
-                    incluir_roteiro(roteiro);
+                    // Criando um roteiro e adicionando no vetor
+                    aux_roteiro = gerar_Roteiro(roteiros);
+                    roteiros.push_back(aux_roteiro);
+                    cout << "Roteiro cadastrado com sucesso !" << endl;
+                    pause();
                     break;
                 case 2:
-                    excluir_roteiro(roteiro);
+                    // chamada da função remover Roteiro
+                    if (roteiros.empty())
+                    {
+                        cout << "Nao ha roteiros cadastrados !" << endl;
+                    }
+                    else
+                    {
+                        if (remover_Roteiro(roteiros))
+                        {
+                            cout << "Roteiro removido com sucesso !" << endl;
+                        }
+                        else
+                        {
+                            cout << "Erro ao remover o roteiro !" << endl;
+                            cout << "Codigo inexistente ou digitado Errado !" << endl;
+                        }
+                    }
+                    limparBuffers();
+                    pause();
                     break;
                 case 3:
-                    alterar_roteiro(roteiro);
+                    // chamada da função alterar passageiro
+                    if (roteiros.empty())
+                    {
+                        cout << "Nao ha roteiros cadastrados !" << endl;
+                        limparBuffers();
+                        pause();
+                    }
+                    else
+                    {
+                        alterar_Roteiro(roteiros);
+                    }
                     break;
                 case 4:
-                    lista_roteiros(roteiro);
+                    // chamada da função listar passageiros
+                    if (roteiros.empty())
+                    {
+                        cout << "Nao ha roteiros cadastrados !" << endl;
+                    }
+                    else
+                    {
+                        listar_Roteiro(roteiros);
+                    }
+                    limparBuffers();
+                    pause();
                     break;
                 case 5:
-                    localiza_roteiro(roteiro);
+                    // chamada da função localizar passageiro
+                    if (roteiros.empty())
+                    {
+                        cout << "Nao ha roteiros cadastrados !" << endl;
+                    }
+                    else
+                    {
+
+                        aux = localizar_Roteiro(roteiros);
+
+                        cout << "Roteiro localizado segue os dados: " << endl;
+                        cout << "=======================================" << endl;
+                        
+                        imprimir_Roteiro(roteiros[aux]);
+
+                        cout << "=======================================" << endl;
+                    }
+                    limparBuffers();
+                    pause();
                     break;
                 case 0:
                     break;
@@ -164,9 +313,10 @@ int main()
             } while (opcao2 != 0);
             break;
         case 3:
-            do{
-                limpa_tela();
-                opcao2 = menu_Embarque();
+            do
+            {
+                limpaTela();
+                opcao2 = Menu_Embarque();
 
                 switch (opcao2)
                 {
@@ -190,41 +340,226 @@ int main()
                     break;
                 }
 
-            } while (opcao2 != 0); 
-            break;
-        case 4:
-            // chamada da função 
+            } while (opcao2 != 0);
             break;
         case 0:
-            // chamada da função                     
+            // chamada da função
             break;
         default:
-
+            cout << "Opção invalida !" << endl;
+            cout << "Por favor digite uma opcao valida !\n";
+            limparBuffers();
+            pause();
             break;
         }
     } while (opcao != 0);
-    
+
     return 0;
 }
 
-void pause(){
-    cout << "\nPressione a tecla Enter para continuar...\n";
-    cin.sync();
-    cin.get();
-}
-
-void limpa_tela(){
-    system("echo ''") == 0 ? system("clear") : system("cls");
-}
-
-void limpa_tela_pause(){
-    pause();
-    limpa_tela();
-}
-
-int menu()
+// Funções de utilidades
+void pause()
 {
-    cout << "############## menu ##############\n\n";
+    cout << "\nPressione a tecla Enter para continuar...\n";
+    cin.clear(); // Limpa quaisquer flags de erro no cin
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    // cin.get(); // Aguarda até que o usuário pressione Enter
+}
+void limparBuffers()
+{
+    // Limpa o buffer de entrada do cin
+    cin.clear();
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    // Limpa o buffer de saída do cout
+    cout.flush();
+}
+void limpaTela()
+{
+    cin.clear();
+
+    // Verifica se a variável de ambiente WINDIR está definida (ambiente Windows)
+    const char *windir = getenv("WINDIR");
+
+    if (windir != nullptr && strlen(windir) > 0)
+    {
+        // Se estiver definida, estamos no Windows, então use "cls"
+        system("cls");
+    }
+    else
+    {
+        // Caso contrário, estamos em um ambiente Unix/Linux, use "clear"
+        system("clear");
+    }
+}
+void limpaTela_pause()
+{
+    pause();
+    limpaTela();
+}
+
+// Verifica se o CPF é válido
+bool validarCPF(string cpf)
+{
+    // Verifica se o CPF tem 11 dígitos
+    if (cpf.size() != 11)
+    {
+        return false;
+    }
+
+    // Converte os dígitos do CPF para inteiros
+    int digitos[11];
+    for (int i = 0; i < 11; i++)
+    {
+        if (!isdigit(cpf[i]))
+        {
+            return false;
+        }
+        digitos[i] = cpf[i] - '0';
+    }
+
+    // Calcula o primeiro dígito verificador
+    int soma = 0;
+    for (int i = 0; i < 9; i++)
+    {
+        soma += digitos[i] * (10 - i);
+    }
+    int primeiroDigito = (soma * 10) % 11;
+    if (primeiroDigito == 10)
+    {
+        primeiroDigito = 0;
+    }
+
+    // Verifica o primeiro dígito verificador
+    if (primeiroDigito != digitos[9])
+    {
+        return false;
+    }
+
+    // Calcula o segundo dígito verificador
+    soma = 0;
+    for (int i = 0; i < 10; i++)
+    {
+        soma += digitos[i] * (11 - i);
+    }
+    int segundoDigito = (soma * 10) % 11;
+    if (segundoDigito == 10)
+    {
+        segundoDigito = 0;
+    }
+
+    // Verifica o segundo dígito verificador
+    if (segundoDigito != digitos[10])
+    {
+        return false;
+    }
+
+    // Se todas as verificações passaram, o CPF é válido
+    return true;
+}
+// Verifica se o cpf já foi cadastrado anteriormente
+bool verifica_CPF(string cpf, vector<Passageiro> &passageiros)
+{
+    if (validarCPF(cpf))
+    {
+        for (Passageiro passageiro : passageiros)
+        {
+            if (passageiro.cpf == cpf)
+            {
+                return false;
+            }
+        }
+    }
+    else
+    {
+        return false;
+    }
+    return true;
+}
+
+// Verifica se a data é válida além de receber a data
+// passamos um boolean que indica se é limitado o ano a atual ou não
+bool validarData(Data data, bool atual)
+{
+    // Obter o tempo atual
+    time_t tempoAtual = time(nullptr);
+
+    // Converter o tempo atual para uma estrutura tm
+    tm *infoTempo = localtime(&tempoAtual);
+
+    // Obter o ano atual (adicione 1900 ao campo tm_year)
+    int anoAtual = infoTempo->tm_year + 1900;
+
+    // Verifica se o ano é válido (entre 1900 e o ano atual)
+    if (atual)
+    {
+        if (data.ano < 1900 || data.ano > anoAtual)
+        {
+            return false;
+        }
+    }
+    else
+    {
+        if (data.ano < 1900 || data.ano > anoAtual + ANOSMAXIMO)
+        {
+            return false;
+        }
+    }
+
+    // Verifica se o mês está dentro do intervalo de 1 a 12
+    if (data.mes < 1 || data.mes > 12)
+    {
+        return false;
+    }
+
+    // Verifica o número de dias com base no mês (considerando anos bissextos)
+    int diasNoMes[] = {0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+    // Verifica se é um ano bissexto
+    if ((data.ano % 4 == 0 && data.ano % 100 != 0) || (data.ano % 400 == 0))
+    {
+        diasNoMes[2] = 29; // Fevereiro tem 29 dias em anos bissextos
+    }
+
+    // Verifica se o dia está dentro do intervalo válido para o mês
+    if (data.dia < 1 || data.dia > diasNoMes[data.mes])
+    {
+        return false;
+    }
+
+    // Se passou por todas as verificações, a data é válida
+    return true;
+}
+
+Data gera_data(bool atual)
+{
+    Data data;
+    bool valido;
+    do
+    {
+        cout << "Digite o dia: ";
+        cin >> data.dia;
+        cout << "Digite o mes: ";
+        cin >> data.mes;
+        cout << "Digite o ano: ";
+        cin >> data.ano;
+        valido = validarData(data, atual);
+        if (!valido)
+        {
+            limpaTela();
+            cout << "Data inválida !!" << endl;
+            cout << "Por favor, digite uma data valida!" << endl;
+            limparBuffers();
+        }
+    } while (!valido);
+    data.data = to_string(data.dia) + "/" + to_string(data.mes) + "/" + to_string(data.ano);
+    return data;
+}
+
+// ##########################################################################
+
+// Funções de Menus
+int Menu()
+{
+    cout << "############## Menu ##############\n\n";
     cout << "1 - Gestao de Passageiros \n";
     cout << "2 - Gestao de Roteiros \n";
     cout << "3 - Gestao de Embarcacoes \n";
@@ -237,14 +572,36 @@ int menu()
     return opcao;
 }
 
-int menu_passageiros(){
-    cout << "############## menu de Passageiros ##############\n\n";
+int Menu_Alterar_Passageiro(Passageiro p)
+{
+    int opcao;
+
+    cout << "############## Alterar dados de Passageiro ##############\n\n";
+    cout << "Passageiro: " << p.nome << "\n\n";
+    cout << "CPF: " << p.cpf << "\n\n";
+    cout << "Data de Nascimento: " << p.dt_nascimento.data << "\n\n";
+    p.num_Autorizacao != 0 ? cout << "Numero de Autorizacao: " << p.num_Autorizacao << "\n\n": cout << "Numero de Autorizacao: Maior de idade" << "\n\n";
+    cout << "_____________________________________________________________\n\n";
+    cout << "1 - Nome \n";
+    cout << "2 - CPF \n";
+    cout << "3 - Data de Nascimento \n";
+    cout << "4 - Numero de Autorizacao \n";
+    cout << "0 - Sair\n";
+
+    cout << "\nEscolha uma opcao: ";
+    cin >> opcao;
+
+    return opcao;
+}
+int Menu_Passageiros()
+{
+    cout << "############## Menu de Passageiros ##############\n\n";
     cout << "1 - Incluir \n";
     cout << "2 - Excluir\n";
-    cout << "3 - Alterar CPF\n";
+    cout << "3 - Alterar\n";
     cout << "4 - Listar\n";
-    cout << "5 - Localizar\n";
-    cout << "0 - Voltar ao menu Principal\n";
+    cout << "5 - Localizar passageiro via CPF\n";
+    cout << "0 - Voltar ao Menu Principal\n";
 
     int opcao;
     cout << "\nEscolha uma opcao: ";
@@ -253,14 +610,15 @@ int menu_passageiros(){
     return opcao;
 }
 
-int menu_roteiros(){
-    cout << "############## menu de Roteiros ##############\n\n";
+int Menu_Roteiros()
+{
+    cout << "############## Menu de Roteiros ##############\n\n";
     cout << "1 - Incluir \n";
-    cout << "2 - Excluir\n";
-    cout << "3 - Alterar\n";
-    cout << "4 - Listar\n";
-    cout << "5 - Localizar\n";
-    cout << "0 - Voltar ao menu Principal\n";
+    cout << "2 - Excluir \n";
+    cout << "3 - Alterar \n";
+    cout << "4 - Listar  \n";
+    cout << "5 - Localizar roteiro via codigo\n";
+    cout << "0 - Voltar ao Menu Principal    \n";
 
     int opcao;
     cout << "\nEscolha uma opcao: ";
@@ -269,632 +627,500 @@ int menu_roteiros(){
     return opcao;
 }
 
-int menu_Embarque(){
-    cout << "############## menu de Embarque ##############\n\n";
+int Menu_Embarque()
+{
+    cout << "############## Menu de Embarque ##############\n\n";
     cout << "1 - Incluir \n";
     cout << "2 - Excluir\n";
     cout << "3 - Alterar\n";
     cout << "4 - Listar\n";
-    cout << "0 - Voltar ao menu Principal\n";
+    cout << "0 - Voltar ao Menu Principal\n";
 
     int opcao;
     cout << "\nEscolha uma opcao: ";
     cin >> opcao;
 
     return opcao;
-};
+}
 
-void lista_passageiro(vector<Passageiro> &passageiro){
-        cout <<"---------------------Lista de passageiro-------------------"<< endl;
-        cout << "==========================================================" << endl;
-    if(passageiro.size()> 0){    
-        for (const Passageiro& passageiro : passageiro) {
-            cout<<"Nome: " << passageiro.nome << 
-            "\nCPF: " <<passageiro.cpf <<  
-            "\nData Nascimento: " << passageiro.dt_nascimento <<
-            "\nAutorizacao: " << passageiro.num_Autorizacao << endl;
-            cout << "==========================================================" << endl;
-            cout << "==========================================================" << endl;
-        };
+int Menu_Alterar_Roteiro(Roteiro r)
+{
+    int opcao;
 
-    }else{
-        cout <<"Opa, a lista ainda esta vazia!!"<< endl;
-    };  
-};
+    cout << "############## Alterar dados de Roteiro ##############\n\n";
+    cout << "Codigo: " << r.codigo << "\n\n";
+    cout << "Data: " << r.data.data << "\n\n";
+    cout << "Hora: " << r.Hora << "\n\n";
+    cout << "Duracao: " << r.duracao << "\n\n";
+    cout << "Origem: " << r.origin << "\n\n";
+    cout << "Destino: " << r.destino << "\n\n";
+    cout << "_____________________________________________________________\n\n";
+    cout << "1 - Codigo \n";
+    cout << "2 - Data \n";
+    cout << "3 - Hora \n";
+    cout << "4 - Duracao \n";
+    cout << "5 - Origem \n";
+    cout << "6 - Destino \n";
+    cout << "0 - Sair\n";
 
-bool valida_cpf(string& cpf){
-        /**
-         * valida_cpf: Esta função valida o cpf utilizando um regex.
-         * Paramentro cpf do tipo string .
-         * retorna true ou false.
-         */
-    regex datePattern(R"(\d{3}\.\d{3}\.\d{3}-\d{2}|\d{11})");
+    cout << "\nEscolha uma opcao: ";
+    cin >> opcao;
+    return opcao;
+}
 
-    return regex_match(cpf, datePattern);
+int Menu_Ocorrencia(){
+    cout << "############## Menu de Ocorrencia ##############\n\n";
+    cout << "1 - Incluir \n";
+    cout << "2 - Excluir\n";
+    cout << "3 - Alterar\n";
+    cout << "4 - Listar por Passageiro\n";
+    cout << "5 - Listar por Roteiro\n";
+    cout << "0 - Voltar ao Menu Principal\n";
 
-};
+    int opcao;
+    cout << "\nEscolha uma opcao: ";
+    cin >> opcao;
 
-bool valida_idade(const string& dataNascimento){
-    time_t t = time(nullptr);
-    tm tmAtual = *localtime(&t);
+    return opcao;
+}
 
-    tm tmNascimento = {};
-    istringstream ss(dataNascimento);
-    ss >> get_time(&tmNascimento, "%d/%m/%Y");
+int Menu_Alterar_Ocorrencia(Ocorrencia o){
+    int opcao;
+    cout << "############## Alterar dados de Ocorrencia ##############\n\n";
+    cout << "Descricao: " << o.Descricao << "\n\n";
+    cout << "Data: " << o.data << "\n\n";
+    cout << "Hora: " << o.hora << "\n\n";
+    cout << "Codigo: " << o.numero_Apolice << "\n\n";
+    cout << "_____________________________________________________________\n\n";
+    cout << "1 - Descricao \n";
+    cout << "2 - Data \n";
+    cout << "3 - Hora \n";
+    cout << "4 - Numero de Apolice\n";
+    cout << "0 - Voltar ao Menu Ocorrencia\n";
 
-
-    int idade = tmAtual.tm_year - tmNascimento.tm_year;
-
-    if (tmNascimento.tm_mon > tmAtual.tm_mon ||
-        (tmNascimento.tm_mon == tmAtual.tm_mon && tmNascimento.tm_mday > tmAtual.tm_mday)) {
-        idade--;
-    }
+    cout << "\nEscolha uma opcao: ";
+    cin >> opcao;
     
-    if (idade >= 16) {
-        return  true;
-    };
-      
-    return false;
+    return opcao;
+}
+// ###########################################################################
+
+// Funções de gestão de passageiros
+
+void imprimir_passageiro(Passageiro p)
+{
+    cout << "Nome: " << p.nome << endl;
+    cout << "CPF: " << p.cpf << endl;
+    cout << "Data de Nascimento: " << p.dt_nascimento.data << endl;
+    cout << "Numero de Autorizacao: " << p.num_Autorizacao << endl;
 }
 
-bool valida_data(string& data) {
-        /**
-         * valida_data: Esta função valida o data utilizando um regex.
-         * Paramentro data do tipo string .
-         * retorna true ou false.
-         */
-    regex datePattern(R"(\d{2}/\d{2}/\d{4})");
+int Passageiro::idade()
+{
+    // Obter o tempo atual
+    time_t tempoAtual = time(nullptr);
 
-    return regex_match(data, datePattern);
-};
+    // Converter o tempo atual para uma estrutura tm
+    tm *infoTempo = localtime(&tempoAtual);
 
-bool valida_horario(string& horario) {
-        /**
-         * valida_data: Esta função valida o horario utilizando um regex.
-         * Paramentro horario do tipo string .
-         * retorna true ou false.
-         */
-    regex datePattern(R"(\d{2}:\d{2})");
+    // Obter o ano atual (adicione 1900 ao campo tm_year)
+    int anoAtual = infoTempo->tm_year + 1900;
 
-    return regex_match(horario, datePattern);
-};
+    return anoAtual - dt_nascimento.ano;
+}
+Passageiro gerar_passageiro(vector<Passageiro> &passageiros)
+{
+    Passageiro p;
+    bool verifica;
+    cout << "==========Dados do Passageiro==========\n";
+    do
+    {
+        cout << "\nDigite o CPF do passageiro: ";
+        cin >> p.cpf;
+        verifica = verifica_CPF(p.cpf, passageiros);
+        if (!verifica)
+        {
+            cout << "CPF já cadastrado anteriormente ou inválido !!\n";
+            cout << "Digite um CPF válido para o passageiro !!!\n";
+            limparBuffers();
+        }
+    } while (!verifica);
 
-bool cpf_cadastrado(vector <Passageiro> &passageiro, string &cpf){
-    if(passageiro.size()> 0){    
-        for (const Passageiro& passageiro : passageiro) {
-            if(passageiro.cpf == cpf){
-                return true;
-            };
-        };
-    };
-    return false;
+    cout << "Digite o nome do passageiro: ";
 
-};
+    cin.ignore();
+    getline(cin, p.nome);
 
-bool remove_cpf_index(vector <Passageiro> &passageiro, string cpf){
-    int tamanho;
-    tamanho = passageiro.size();
-    passageiro.erase(std::remove_if(passageiro.begin(), passageiro.end(),
-        [&cpf](const Passageiro& passageiro) {
-            return passageiro.cpf == cpf;
-        }), passageiro.end());
+    p.dt_nascimento = gera_data(true);
 
-    if(tamanho > passageiro.size()){
-        return true;
+    if (p.idade() < MAIOR_IDADE)
+    {
+        cout << "Digite o numero de autorizacao do passageiro: ";
+        cin >> p.num_Autorizacao;
     }
-    return false;
-};
+    cout << "======================================\n\n";
 
-void altera_campo(vector<Passageiro> &vetorDePassageiros, Passageiro &passageiro_atualizado, const string &cpfParaAlterar, bool &altera_dt, bool &altera_cpf, bool &altera_nome, bool &altera_autoriza){
+    return p;
+}
 
-    for (Passageiro &passageiro : vetorDePassageiros) {
-        if (passageiro.cpf == cpfParaAlterar) {
-            if(altera_dt) {
-                passageiro.dt_nascimento =  passageiro_atualizado.dt_nascimento;
-            } 
-            if(altera_cpf) {
-                passageiro.cpf = passageiro_atualizado.cpf;
-            } 
-            if(altera_nome) {
-                passageiro.nome = passageiro_atualizado.nome;
-            }
-            if(altera_autoriza) { 
-                passageiro.num_Autorizacao = passageiro_atualizado.num_Autorizacao!= 0? passageiro_atualizado.num_Autorizacao : passageiro.num_Autorizacao;
-            };
-        };
-    };
-};
-
-void dados_passageiro(vector<Passageiro> &passageiro, const string &elemento){
-    cout <<"----------------Dados do passageiro-----------------"<< endl;
-    cout << "======================================================" << endl;
-    for (Passageiro &passageiro : passageiro) {
-        if (passageiro.cpf == elemento) {
-            passageiro.cpf = elemento;
-        cout << "======================================================" << endl;
-            cout<<"Nome: " << passageiro.nome << 
-            "\nCPF: " <<passageiro.cpf <<  
-            "\nData Nascimento: " << passageiro.dt_nascimento <<
-            "\nAutorização: " << passageiro.num_Autorizacao << endl;
+int localizar_passageiro(vector<Passageiro> &passageiros)
+{
+    string cpf;
+    int tamanho = passageiros.size();
+    cout << "Digite o CPF do passageiro que deseja localizar: ";
+    cin >> cpf;
+    for (int i = 0; i < tamanho; i++)
+    {
+        if (passageiros[i].cpf == cpf)
+        {
+            return i;
         }
     }
+    return -1;
 }
 
-void incluir_passageiro(vector <Passageiro> &passageiro){
-
-    Passageiro passageiro_novo;
-    string dt_nascimento , cpf, nome;
-    int num_autorizacao = 0;
-    bool validacao_cpf;
-    char resposta;
-
-    do{
-        cout << "CPF do passageiro" << endl;
-        cin >> passageiro_novo.cpf;
-        //chama funçaõ para validação
-        if(valida_cpf(passageiro_novo.cpf)){
-
-            if(cpf_cadastrado(passageiro, passageiro_novo.cpf)) {
-                cout << "CPF ja cadastrado, mas voce pode adicionar outro passageiro!!!"  <<endl;
-
-            
-            }else{
-                cout << "Nome do passageiro" <<endl;
-                cin >>passageiro_novo.nome;
-
-                cout << "Data Nascimento do passageiro(dd/mm/yyyy)" <<endl;
-                cin >>passageiro_novo.dt_nascimento;
-
-                if(!valida_data(passageiro_novo.dt_nascimento)){
-                    cout << "Nascimento do passageiro invalida tente novamente." <<endl;
-                    break;
-                };
-
-                if(!valida_idade(passageiro_novo.dt_nascimento)) {
-                    cout << "O passageiro "<< nome << "é menor de idade, então preciso que informa o numero de autorizacao:" <<endl;
-                    cin >> num_autorizacao;
-                }
-                passageiro_novo.num_Autorizacao = num_autorizacao;
-                passageiro.push_back(passageiro_novo);
-            }
-        }else{
-            cout << "CPF invalido!" << endl;
-        }; 
-        // verifica se o CPF já está cadastrado 
-        cout << "Deseja Adicionar outro passageiro (s/n)?" <<endl;
-        cin >>resposta;
-    }while(resposta =='s') ; 
-
-};
-
-void excluir_passageiro(vector <Passageiro> &passageiro){
+bool remover_passageiro(vector<Passageiro> &passageiros)
+{
     string cpf;
-    char resposta;
+    int i;
 
-    do{
-        cout << "Para excluir um passageiro, preciso do CPF:" << endl;
-        cin >> cpf;
-        //chama função para validação
-        // verifica se o CPF já está cadastrado
-        if (valida_cpf(cpf)){
-            if(passageiro.size() == 0){
-                cout << "A lista de passageiros ainda está vazia" << endl;
-                break;
-            };
-            if(cpf_cadastrado(passageiro, cpf)) {
-                if(remove_cpf_index(passageiro, cpf)){
-                    cout << "Roteiro excluido da lista" << endl;
-                }else{
-                    cout << "Poxa, não consegui remover o passageiro, tente mais tarde!!" << endl;
-                    break;
-                };
-            } else {
-                cout << "Passageiro não está na lista" << endl;
-                };
-        }else{
-            cout << "CPF invalido!" << endl;
-        };  
-        cout << "Deseja remover outro passageiro (s/n)?" <<endl;
-        cin >>resposta;
+    i = localizar_passageiro(passageiros);
 
-    }while(resposta =='s'); 
-};
-
-void alterar_dados(vector<Passageiro> &passageiro){
-
-    bool altera_dt, altera_cpf, altera_nome, altera_autoriza;
-    Passageiro passageiro_atualizado;
-    string cpf;
-    char resposta, resposta_altera;
-
-        do{
-            cout << "CPF do passageiro" << endl;
-            cin >> cpf;
-            // verifica se o CPF já está cadastrado 
-            if(cpf_cadastrado(passageiro, cpf)){
-                if(valida_cpf(cpf)){
-                    dados_passageiro(passageiro, cpf);
-                cout << "Deseja alterar o cpf do passageiro: (s/n)" <<endl;
-                cin >> resposta_altera;
-
-                if(resposta_altera =='s'){
-                    resposta_altera ='\0';
-                    altera_cpf = true;
-
-                    cout << "Digite o CPF atualizado:" <<endl;
-                    cin >> passageiro_atualizado.cpf;
-                }
-                cout << "Deseja alterar o nome do passageiro: (s/n)" <<endl;
-                cin >> resposta_altera;
-
-                if(resposta_altera =='s'){
-                    resposta_altera ='\0';
-                    altera_nome= true;
-
-                    cout << "Digite o Nome  atualizado:" <<endl;
-                    cin >> passageiro_atualizado.nome;
-                }
-                cout << "Deseja alterar a data de nascimento do passageiro: (s/n)" <<endl;
-                cin >> resposta_altera;
-
-                if(resposta_altera =='s'){
-                    resposta_altera ='\0';
-                    altera_dt = true;
-
-                    cout << "Digite Data Nascimento atualizadaa(dd/mm/yyyy):" <<endl;
-                    cin >>passageiro_atualizado.dt_nascimento;
-
-                    if(!valida_idade(passageiro_atualizado.dt_nascimento)) {
-                        cout << "Sua data de nascimento foi alterada, e você é menor de idade, então preciso que informa o numero de autorizacao:" <<endl;
-                        cin >> passageiro_atualizado.num_Autorizacao;
-                        altera_autoriza =true;
-                    }
-                }
-                altera_campo(passageiro, passageiro_atualizado, cpf, altera_dt, altera_cpf, altera_nome, altera_autoriza);
-                cout << "============================" << endl;
-
-                }else{
-                    cout << "CPF invalido!" << endl;
-                };
-            }else{
-                cout << "Passageiro não está na lista" << endl;
-                break;
-            }; 
-                
-
-        cout << "Deseja alterar outro passageiro (s/n)?" <<endl;
-        cin >>resposta;
-
-    }while(resposta =='s') ;
-}
-
-void localiza_passageiro(vector<Passageiro> &passageiro){
-
-    string cpf;
-    char resposta;
-
-    do{
-        cout << "Digite o CPF do passageiro que deseja localizar:" <<endl;
-        cin >> cpf;
-        //chama função para validação
-        // verifica se o CPF já está cadastrado
-        if (valida_cpf(cpf)){
-            if(passageiro.size() == 0){
-                cout << "A lista de passageiros ainda está vazia" << endl;
-                break;
-            }else{
-                if(cpf_cadastrado(passageiro, cpf)) {
-                    dados_passageiro(passageiro, cpf);
-                }else{
-                    cout << "Passageiro não localizado" << endl;
-                    
-                }
-            };
-        }else{
-            cout << "CPF invalido!" << endl;
-        };  
-        cout << "Deseja localizar outro passageiro (s/n)?" <<endl;
-        cin >>resposta;
-
-    }while(resposta =='s'); 
-};
-
-// funções para roteiro
-bool codigo_roteiro_cadastrado(vector <Roteiro> &roteiro, int codigo){
-
-    if(roteiro.size()> 0){    
-        for (const Roteiro& roteiro : roteiro) {
-            if(roteiro.codigo == codigo){
-                return true;
-            };
-        };
-    };
-    return false;
-};
-
-bool valida_destino_origem(string destino, string origem){  
-
-    if(destino == origem){
-        return true;
-    };
-    return false;
-};
-
-void incluir_roteiro(vector <Roteiro> &roteiro){
-
-    Roteiro roteiro_novo;
-    char resposta;
-
-    do{
-        cout << "Digite o codigo do Roteiro" << endl;
-        cin >> roteiro_novo.codigo;
-       if(codigo_roteiro_cadastrado(roteiro, roteiro_novo.codigo)){
-            cout << "O codigo do ja cadastrado, tente novamente." <<endl;
-            
-       }else{
-            cout << "Agora digite a data do Roteiro(dd/mm/yy)" << endl;
-            cin >> roteiro_novo.data;
-
-            if(!valida_data(roteiro_novo.data)){
-                cout << "Nascimento do roteiro invalida, tente novamente." <<endl;
-                break;
-            }else{
-                cout << "digite hora prevista do Roteiro(00:00)" << endl;
-                cin >> roteiro_novo.hora;
-
-                if(!valida_horario(roteiro_novo.hora)){
-                    cout << "Horario do roteiro invalido, tente novamente." <<endl;
-                }else{
-                    cout << "Digite a duração prevista do Roteiro:" << endl;
-                    cin >> roteiro_novo.duracao;
-
-                    cout << "Digite a origem:" << endl;
-                    cin >> roteiro_novo.origem;
-
-                    cout << "Digite o destino:" << endl;
-                    cin >> roteiro_novo.destino;
-
-                    if(valida_destino_origem(roteiro_novo.destino, roteiro_novo.origem)){
-                        cout << "Origem e Destinos são iguais, tente outras destino ou origem." << endl;
-
-                    }else{
-                        roteiro.push_back(roteiro_novo);
-
-                    };
-
-                };
-            };
-       };
-        // verifica se o CPF já está cadastrado 
-        cout << "Deseja Adicionar outro roteiro (s/n)?" <<endl;
-        cin >>resposta;
-    }while(resposta =='s') ; 
-
-};
-
-void dados_roteiros(vector <Roteiro> &roteiro, int codigo){
-        cout <<"---------------------Dados dos Roteiros-------------------"<< endl;
-        cout << "==========================================================" << endl;
-    if(roteiro.size()> 0){    
-        for (const Roteiro& roteiro : roteiro) {
-            if(roteiro.codigo == codigo){
-                cout<<"Codigo: " << roteiro.codigo << 
-                "\nData: " <<roteiro.data <<  
-                "\nHorario: " << roteiro.hora<<
-                "\nOrigem: " << roteiro.origem <<
-                "\nDestino: " << roteiro.destino <<
-                "\nDuração prevista: " << roteiro.duracao << endl;
-                cout << "==========================================================" << endl;
-            };
-        };
-
-    }else{
-        cout <<"Opa, a lista de roteriros ainda esta vazia!!"<< endl;
-    }   
-};
-
-void lista_roteiros(vector <Roteiro> &roteiro){
-        cout <<"---------------------Lista de Roteiros-------------------"<< endl;
-        cout << "==========================================================" << endl;
-    if(roteiro.size()> 0){    
-        for (const Roteiro& roteiro : roteiro) {
-            cout<<"Codigo: " << roteiro.codigo << 
-            "\nData: " <<roteiro.data <<  
-            "\nHorario: " << roteiro.hora<<
-            "\nOrigem: " << roteiro.origem <<
-            "\nDestino: " << roteiro.destino <<
-            "\nDuração prevista: " << roteiro.duracao << endl;
-            cout << "==========================================================" << endl;
-            cout << "==========================================================" << endl;
-        };
-
-    }else{
-        cout <<"Opa, a lista de roteriros ainda esta vazia!!"<< endl;
-    }   
-};
-
-bool remove_roteiro(vector <Roteiro> &roteiro,  int codigo){
-    int tamanho;
-    tamanho = roteiro.size();
-    roteiro.erase(std::remove_if(roteiro.begin(), roteiro.end(),
-        [&codigo](const Roteiro& roteiro) {
-            return roteiro.codigo == codigo;
-        }), roteiro.end());
-    if(tamanho > roteiro.size()){
+    if (i != -1)
+    {
+        passageiros.erase(passageiros.begin() + i);
         return true;
     }
+
     return false;
-};
-
-void excluir_roteiro(vector <Roteiro> &roteiro){
-
-    int codigo;
-    char resposta;
-
-    do{
-        if(roteiro.size() > 0){
-            cout << "Digite o codigo do Roteiro" << endl;
-            cin >> codigo;
-
-            if(remove_roteiro(roteiro, codigo)){
-                cout << "Roteiro excluido da lista" << endl;
-            }else{
-                cout << "Poxa, não consegui remover o roteiro, tente mais tarde!" << endl;
-                break;
-            };
-
-        }else{
-            cout <<"Opa, a lista de roteriros ainda esta vazia!!"<< endl;
-            break;
-        };
-
-        cout << "Deseja remover outro passageiro (s/n)?" <<endl;
-        cin >>resposta;
-
-    }while(resposta =='s'); 
-};
-
-void alterar_campos_roteiro(vector <Roteiro> &roteiro, Roteiro &roteiro_atualizado, int &codigo, bool &alter_data, bool &alter_codigo, bool &alter_hora, bool &alter_orig, bool &alter_dest, bool &alter_durat){
-
-    for (Roteiro &roteiro : roteiro) {
-        if (roteiro.codigo == codigo) {
-            if(alter_data) {
-                roteiro.data = roteiro_atualizado.data;
-            }; 
-            if(alter_codigo) {
-                roteiro.codigo = roteiro_atualizado.codigo;
-            }; 
-            if(alter_durat) {
-                roteiro.data = roteiro_atualizado.duracao;
-            };
-            if(alter_hora) { 
-                roteiro.hora = roteiro_atualizado.hora;
-            };
-            if(alter_orig) { 
-                roteiro.origem = roteiro_atualizado.origem;
-            };
-            if(alter_dest) { 
-                roteiro.destino = roteiro_atualizado.destino;
-            };
-        };
-    };
-
-};
-
-void alterar_roteiro(vector <Roteiro> &roteiro){
-
-    bool alter_data, alter_codigo, alter_hora, alter_orig, alter_dest, alter_durat;
-    int codigo;
-    Roteiro roteiro_atualizado;
-    char resposta, resposta_altera;
-
-        do{
-            if(roteiro.size() > 0){
-                cout << "Digite o codigo do Roteiro" << endl;
-                cin >> codigo;
-
-
-                cout << "Deseja alterar o codigo do Roteiro: (s/n)" <<endl;
-                cin >> resposta_altera;
-
-                if(resposta_altera =='s'){
-                    resposta_altera ='\0';
-                    alter_codigo = true;
-
-                    cout << "Digite o codigo do roteiro atualizado:" <<endl;
-                    cin >> roteiro_atualizado.codigo;
-                }
-                // altera data
-                cout << "Deseja alterar a data do roteiro atualizado: (s/n)" <<endl;
-                cin >> resposta_altera;
-
-                if(resposta_altera =='s'){
-                    resposta_altera ='\0';
-                    alter_data= true;
-
-                    cout << "Digite a data atualizada:" <<endl;
-                    cin >> roteiro_atualizado.data;
-                }
-                // altera horario
-                cout << "Deseja alterar a horario do roteiro atualizado: (s/n)" <<endl;
-                cin >> resposta_altera;
-
-                if(resposta_altera =='s'){
-                    resposta_altera ='\0';
-                    alter_hora= true;
-
-                    cout << "Digite o horario atualizado:" <<endl;
-                    cin >> roteiro_atualizado.hora;
-                }
-                // altera origem
-                cout << "Deseja alterar a origem do roteiro atualizado: (s/n)" <<endl;
-                cin >> resposta_altera;
-
-                if(resposta_altera =='s'){
-                    resposta_altera ='\0';
-                    alter_orig= true;
-
-                    cout << "Digite o origem atualizado:" <<endl;
-                    cin >> roteiro_atualizado.origem;
-                }
-                // altera destino
-                cout << "Deseja alterar a destino do roteiro atualizado: (s/n)" <<endl;
-                cin >> resposta_altera;
-
-                if(resposta_altera =='s'){
-                    resposta_altera ='\0';
-                    alter_dest = true;
-
-                    cout << "Digite o destino do roteiro atualizado:" <<endl;
-                    cin >>roteiro_atualizado.destino;
-                }
-                // altera duração prevista
-                cout << "Deseja alterar a duracao prevista do roteiro atualizado: (s/n)" <<endl;
-                cin >> resposta_altera;
-
-                if(resposta_altera =='s'){
-                    resposta_altera ='\0';
-                    alter_durat = true;
-
-                    cout << "Digite o duracao prevista roteiro atualizado:" <<endl;
-                    cin >>roteiro_atualizado.duracao;
-                };
-                alterar_campos_roteiro(roteiro, roteiro_atualizado, codigo, alter_data, alter_codigo, alter_hora, alter_orig, alter_dest, alter_durat);
-                cout << "============================" << endl;      
-            }else{
-                cout <<"Opa, a lista de roteriros ainda esta vazia!!"<< endl;
-            };    // verifica se o CPF já está cadastrado 
-
-
-        cout << "Deseja alterar outro roteiro (s/n)?" <<endl;
-        cin >>resposta;
-
-    }while(resposta =='s');
 }
 
-void localiza_roteiro(vector <Roteiro> &roteiro){
+void listar_passageiros(vector<Passageiro> &passageiros)
+{
+    int i = 1;
+    cout << "==========Dados dos Passageiros==========\n\n";
+    for (Passageiro passageiro : passageiros)
+    {
+        cout << "Passageiro: " << i << "ª\n\n";
+        cout << "======================================\n";
 
-    int codigo;
-    char resposta;
+        imprimir_passageiro(passageiro);
 
-    do{
-        if(roteiro.size() > 0){
-            cout << "Digite o codigo do Roteiro que deseja localizar" << endl;
-            cin >> codigo;
+        cout << "======================================\n\n";
+        i++;
+    }
+}
 
-            if(codigo_roteiro_cadastrado(roteiro, codigo)){
-                dados_roteiros(roteiro, codigo);
-            }else{
-                cout << "Roteiro não localizado" << endl;   
+void alterar_passageiro(vector<Passageiro> &passageiros)
+{
+
+    int p;
+    string cpf;
+    p = localizar_passageiro(passageiros);
+    int opcao;
+    if (p != -1 && p >= 0)
+    {
+        do
+        {
+            opcao = Menu_Alterar_Passageiro(passageiros[p]);
+            switch (opcao)
+            {
+            case 1:
+                cout << "Digite o novo nome do passageiro: ";
+                cin.ignore();
+                getline(cin, passageiros[p].nome);
+                cout << "Nome alterado com sucesso !\n";
+                pause();
+                break;
+            case 2:
+                cout << "Digite o novo CPF do passageiro: ";
+                cin >> cpf;
+                if (verifica_CPF(cpf, passageiros))
+                {
+                    passageiros[p].cpf = cpf;
+                    cout << "CPF alterado com sucesso!\n";
                 }
-        }else{
-            cout <<"Opa, a lista de roteriros ainda esta vazia!!"<< endl;
-            break;
-        }; 
-        cout << "Deseja localizar outro passageiro (s/n)?" <<endl;
-        cin >>resposta;
+                else
+                {
+                    cout << "Não foi possivel alterar o CPF do passageiro\n";
+                }
+                limparBuffers();
+                pause();
+                break;
+            case 3:
+                cout << "Digite a nova data de nascimento do passageiro: \n";
+                passageiros[p].dt_nascimento = gera_data(true);
+                cout << "Data de nascimento alterada com sucesso!\n";
+                limparBuffers();
+                pause();
+                break;
+            case 4:
+                if (passageiros[p].idade() < MAIOR_IDADE)
+                {
+                    cout << "Digite o novo numero de autorizacao do passageiro: ";
+                    cin >> passageiros[p].num_Autorizacao;
+                    cout << "Numero de autorizacao alterado com sucesso!\n";
+                }
+                else
+                {
+                    cout << "Não é possivel alterar o numero de autorizacao desse passageiro !!\n";
+                    cout << "Pois ele já atingiu a maior idade !!\n";
+                }
+                limparBuffers();
+                pause();
+                break;
+            case 0:
+                break;
+            default:
+                cout << "Opcao invalida\n";
+                cout << "Por favor digite uma opcao valida !\n";
+                limparBuffers();
+                pause();
+                break;
+            }
+        } while (opcao != 0);
+    }else{
+        cout << "CPF Não encontrado!!\n";
+        cout << "Serar redirecionado para o menu Passageiros !!\n";
+        limparBuffers();
+        pause();
+    }
+}
 
-    }while(resposta =='s'); 
-};
+// ###########################################################################
 
+// Funções de gestão de roteiros
+// verifica se o codigo já está cadastrado retornando true
 
+void Valida_Origem(Roteiro &roteiro)
+{
+    string origem;
+    bool valida;
+    cin.clear();
+    do
+    {
+        cout << "Digite a origem do roteiro: ";
+        getline(cin, origem);
+        valida = origem == roteiro.destino;
+        if (valida)
+        {
+            cout << "Origem invalida !\n";
+            cout << "Não pode ser igual ao destino !!\n";
+            cout << "Por favor digite uma origem valida!\n";
+            pause();
+        }
+    } while (valida);
+    roteiro.origin = origem;
+}
+
+void Valida_Destino(Roteiro &roteiro)
+{
+    string destino;
+    bool valida;
+    cin.clear();
+    do
+    {
+        cout << "Digite o destino do roteiro: ";
+        getline(cin, destino);
+        valida = destino == roteiro.origin;
+        if (valida)
+        {
+            cout << "Destino invalido !\n";
+            cout << "Não pode ser igual ao origem !!\n";
+            cout << "Por favor digite um destino valida!\n";
+            pause();
+        }
+    } while (valida);
+    roteiro.destino = destino;
+}
+
+bool verifica_codigo(int codigo, vector<Roteiro> roteiros)
+{
+    for (Roteiro r : roteiros)
+    {
+        if (r.codigo == codigo)
+        {
+            return false;
+        }
+    }
+    return true;
+}
+Roteiro gerar_Roteiro(vector<Roteiro> &roteiros)
+{
+    Roteiro r;
+    bool verifica;
+    cout << "==========Dados do Roteiro==========\n";
+    do
+    {
+        cout << "\nDigite o codigo do roteiro: ";
+        cin >> r.codigo;
+        verifica = verifica_codigo(r.codigo, roteiros);
+        if (!verifica)
+        {
+            cout << "Codigo já cadastrado anteriormente ou inválido\n";
+            cout << "Digite um codigo válido para o roteiro !";
+            limparBuffers();
+            pause();
+        }
+    } while (!verifica);
+    r.data = gera_data(false);
+    cout << "Digite a hora do roteiro: ";
+    cin >> r.Hora;
+    cout << "Digite a duracao do roteiro: ";
+    cin >> r.duracao;
+    cout << "Digite a origem do roteiro: ";
+
+    cin.ignore();
+    getline(cin, r.origin);
+
+    Valida_Destino(r);
+
+    cout << "======================================\n\n";
+    return r;
+}
+bool remover_Roteiro(vector<Roteiro> &roteiros)
+{
+    int codigo;
+    int tamanho = roteiros.size();
+    cout << "Digite o codigo do roteiro que deseja remover: ";
+    cin >> codigo;
+    for (int i = 0; i < tamanho; i++)
+    {
+        if (roteiros[i].codigo == codigo)
+        {
+            roteiros.erase(roteiros.begin() + i);
+            return true;
+        }
+    }
+    return false;
+}
+void imprimir_Roteiro(Roteiro r)
+{
+    cout << "Codigo: " << r.codigo << endl;
+    cout << "Data: " << r.data.data << endl;
+    cout << "Hora: " << r.Hora << endl;
+    cout << "Duracao: " << r.duracao << endl;
+    cout << "Origin: " << r.origin << endl;
+    cout << "Destino: " << r.destino << endl;
+}
+void listar_Roteiro(vector<Roteiro> &roteiros)
+{
+    int i = 1;
+    cout << "==========Dados dos Roteiros==========\n\n";
+    for (Roteiro roteiro : roteiros)
+    {
+        cout << "Roteiro: " << i << "ª\n\n";
+        cout << "======================================\n";
+
+        imprimir_Roteiro(roteiro);
+
+        cout << "======================================\n\n";
+    }
+}
+int localizar_Roteiro(vector<Roteiro> &roteiros)
+{
+    int codigo;
+    int tamanho = roteiros.size();
+    cout << "Digite o codigo do roteiro que deseja localizar: ";
+    cin >> codigo;
+    for (int i = 0; i < tamanho; i++)
+    {
+        if (roteiros[i].codigo == codigo)
+        {
+            return i;
+        }
+    }
+    return -1;
+}
+
+void alterar_Roteiro(vector<Roteiro> &roteiros)
+{
+    int r;
+    int codigo;
+    r = localizar_Roteiro(roteiros);
+    int opcao;
+    if (r != -1 && r >= 0)
+    {
+        do
+        {
+            opcao = Menu_Alterar_Roteiro(roteiros[r]);
+            limpaTela();
+            limparBuffers();
+            switch (opcao)
+            {
+            case 1:
+                cout << "Digite o novo codigo do roteiro: ";
+                cin >> codigo;
+                if (verifica_codigo(codigo, roteiros))
+                {
+                    roteiros[r].codigo = codigo;
+                    cout << "Codigo alterado com sucesso !\n";
+                }
+                else
+                {
+                    cout << "Não foi possivel alterar o codigo do roteiro\n";
+                }
+                limparBuffers();
+                pause();
+                break;
+            case 2:
+                roteiros[r].data = gera_data(false);
+                cout << "Data alterada com sucesso!\n";
+                limparBuffers();
+                pause();
+                break;
+            case 3:
+                cout << "Digite a nova hora do roteiro: ";
+                cin >> roteiros[r].Hora;
+                cout << "Hora alterada com sucesso!\n";
+                limparBuffers();
+                pause();
+                break;
+            case 4:
+                cout << "Digite a nova duracao do roteiro: ";
+                cin >> roteiros[r].duracao;
+                cout << "Duracao alterada com sucesso!\n";
+                limparBuffers();
+                pause();
+                break;
+            case 5:
+                Valida_Origem(roteiros[r]);
+                cout << "Origem alterada com sucesso!\n";
+                pause();
+                break;
+            case 6:
+                Valida_Destino(roteiros[r]);
+                cout << "Destino alterado com sucesso!\n";
+                pause();
+                break;
+            case 0:
+                break;
+            default:
+                cout << "Opcao invalida\n";
+                cout << "Por favor digite uma opcao valida !\n";
+                pause();
+            }
+        } while (opcao != 0);
+    }else{
+        cout << "Codigo de roteiro nao encontrado !!\n";
+        cout << "Serar redirecionado para o menu Roteiros !!\n";
+        limparBuffers();
+        pause();
+    }
+}
+
+// ###########################################################################
+
+// CPFs Válidos para teste
+/*
+    56920258099
+    16429869091
+    62628795019
+    78192873064
+    76088437057
+    71020146001
+    38754362024
+    12300887096
+    16188894000
+    46429599043
+*/
