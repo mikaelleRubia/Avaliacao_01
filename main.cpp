@@ -3,6 +3,7 @@
 #include <vector>
 #include <limits>
 #include <ctime>
+#include <regex>
 
 using namespace std;
 
@@ -933,7 +934,16 @@ void Valida_Destino(Roteiro &roteiro)
     } while (valida);
     roteiro.destino = destino;
 }
+bool valida_horario(string& horario){
+        /**
+         * valida_data: Esta função valida o horario utilizando um regex.
+         * Paramentro horario do tipo string .
+         * retorna true ou false.
+         */
+    regex datePattern(R"(\d{2}:\d{2})");
 
+    return regex_match(horario, datePattern);
+};
 bool verifica_codigo(int codigo, vector<Roteiro> roteiros)
 {
     for (Roteiro r : roteiros)
@@ -966,17 +976,21 @@ Roteiro gerar_Roteiro(vector<Roteiro> &roteiros)
     r.data = gera_data(false);
     cout << "Digite a hora do roteiro: ";
     cin >> r.Hora;
-    cout << "Digite a duracao do roteiro: ";
-    cin >> r.duracao;
-    cout << "Digite a origem do roteiro: ";
+    if(!valida_horario(r.Hora)){
+        cout << "Horario invalido, tente novamente." <<endl;
+    }else{
+        cout << "Digite a duracao do roteiro: ";
+        cin >> r.duracao;
+        cout << "Digite a origem do roteiro: ";
 
-    cin.ignore();
-    getline(cin, r.origin);
+        cin.ignore();
+        getline(cin, r.origin);
 
-    Valida_Destino(r);
+        Valida_Destino(r);
 
-    cout << "======================================\n\n";
-    return r;
+        cout << "======================================\n\n";
+        return r;
+    }
 }
 bool remover_Roteiro(vector<Roteiro> &roteiros)
 {
