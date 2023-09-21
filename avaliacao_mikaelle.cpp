@@ -214,7 +214,7 @@ void pause(){
 }
 
 void limpa_tela(){
-    system("echo ''") == 0 ? system("clear") : system("cls");
+    system("echo ''") != 0 ? system("clear") : system("cls");
 }
 
 void limpa_tela_pause(){
