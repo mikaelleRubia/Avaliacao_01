@@ -6,6 +6,7 @@
 #include <ctime>
 #include <iomanip>
 #include <algorithm>
+#include <limits>
 
 
 using namespace std;
@@ -209,12 +210,35 @@ int main()
 
 void pause(){
     cout << "\nPressione a tecla Enter para continuar...\n";
-    cin.sync();
-    cin.get();
+    cin.clear(); // Limpa quaisquer flags de erro no cin
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    // cin.get(); // Aguarda até que o usuário pressione Enter
+}
+void limparBuffers()
+{
+    // Limpa o buffer de entrada do cin
+    cin.clear();
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    // Limpa o buffer de saída do cout
+    cout.flush();
 }
 
 void limpa_tela(){
-    system("echo ''") != 0 ? system("clear") : system("cls");
+    cin.clear();
+
+    // Verifica se a variável de ambiente WINDIR está definida (ambiente Windows)
+    const char *windir = getenv("WINDIR");
+
+    if (windir != nullptr && strlen(windir) > 0)
+    {
+        // Se estiver definida, estamos no Windows, então use "cls"
+        system("cls");
+    }
+    else
+    {
+        // Caso contrário, estamos em um ambiente Unix/Linux, use "clear"
+        system("clear");
+    }
 }
 
 void limpa_tela_pause(){
@@ -440,7 +464,8 @@ void incluir_passageiro(vector <Passageiro> &passageiro){
             
             }else{
                 cout << "Nome do passageiro" <<endl;
-                cin >>passageiro_novo.nome;
+                cin.ignore();
+                getline(cin, passageiro_novo.nome);
 
                 cout << "Data Nascimento do passageiro(dd/mm/yyyy)" <<endl;
                 cin >>passageiro_novo.dt_nascimento;
@@ -532,7 +557,9 @@ void alterar_dados(vector<Passageiro> &passageiro){
                     altera_nome= true;
 
                     cout << "Digite o Nome  atualizado:" <<endl;
-                    cin >> passageiro_atualizado.nome;
+                    cin.ignore();
+                    getline(cin, passageiro_atualizado.nome);
+
                 }
                 cout << "Deseja alterar a data de nascimento do passageiro: (s/n)" <<endl;
                 cin >> resposta_altera;
@@ -649,10 +676,12 @@ void incluir_roteiro(vector <Roteiro> &roteiro){
                     cin >> roteiro_novo.duracao;
 
                     cout << "Digite a origem:" << endl;
-                    cin >> roteiro_novo.origem;
+                    cin.ignore();
+                    getline(cin, roteiro_novo.origem);
 
                     cout << "Digite o destino:" << endl;
-                    cin >> roteiro_novo.destino;
+                    cin.ignore();
+                    getline(cin, roteiro_novo.destino);
 
                     if(valida_destino_origem(roteiro_novo.destino, roteiro_novo.origem)){
                         cout << "Origem e Destinos são iguais, tente outras destino ou origem." << endl;
@@ -835,7 +864,9 @@ void alterar_roteiro(vector <Roteiro> &roteiro){
                     alter_orig= true;
 
                     cout << "Digite o origem atualizado:" <<endl;
-                    cin >> roteiro_atualizado.origem;
+                    cin.ignore();
+                    getline(cin, roteiro_atualizado.origem);
+
                 }
                 // altera destino
                 cout << "Deseja alterar a destino do roteiro atualizado: (s/n)" <<endl;
@@ -846,7 +877,9 @@ void alterar_roteiro(vector <Roteiro> &roteiro){
                     alter_dest = true;
 
                     cout << "Digite o destino do roteiro atualizado:" <<endl;
-                    cin >>roteiro_atualizado.destino;
+                    cin.ignore();
+                    getline(cin, roteiro_atualizado.destino);
+
                 }
                 // altera duração prevista
                 cout << "Deseja alterar a duracao prevista do roteiro atualizado: (s/n)" <<endl;
