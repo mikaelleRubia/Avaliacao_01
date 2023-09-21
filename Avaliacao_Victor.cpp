@@ -101,6 +101,7 @@ int main(){
                             limpaTela();
                             incluir_passageiro(passageiros);
                             cout<<"Passageiro cadastrado!"<<endl;
+                            cin.ignore();
                             pause();
                             break;
                         case 2:
@@ -108,6 +109,7 @@ int main(){
                             cout<<"Digite o cpf do passageiro a ser removido (apenas numeros): ";
                             cin>>cpf;
                             excluir_passageiro(passageiros, cpf);
+                            cin.ignore();
                             pause();
                             break;
                         case 3:
@@ -121,6 +123,7 @@ int main(){
                         case 4:
                             limpaTela();
                             listar_passageiros(passageiros);
+                            cin.ignore();
                             pause();
                             break;
                         case 5:
@@ -128,6 +131,7 @@ int main(){
                             cout<<"Digite o cpf do passageiro a ser localizado (apenas numeros): ";
                             cin>>cpf;
                             localizar_passageiro(cpf, passageiros);
+                            cin.ignore();
                             pause();
                             break;
                         case 0:
@@ -157,6 +161,7 @@ int main(){
                             cout<<"Digite o codigo do roteiro a ser removido: ";
                             cin>>codigo;
                             excluir_roteiro(roteiros, codigo);
+                            cin.ignore();
                             pause();
                             break;
                         case 3:
@@ -169,6 +174,7 @@ int main(){
                         case 4:
                             limpaTela();
                             listar_roteiros(roteiros);
+                            cin.ignore();
                             pause();
                             break;
                         case 5:
@@ -176,6 +182,7 @@ int main(){
                             cout<<"Digite o codigo do roteiro a ser localizado: ";
                             cin>>codigo;
                             localizar_roteiro(codigo, roteiros);
+                            cin.ignore();
                             pause();
                             break;
                         case 0:
@@ -204,9 +211,8 @@ void limpaTela(){
 
 void pause(){
     cout << "\nPressione a tecla Enter para continuar...\n";
-    cin.sync();
     cin.ignore(numeric_limits<streamsize>::max(), '\n');
-    cin.get();
+    //cin.get();
 }
 
 int Menu()
@@ -259,9 +265,8 @@ void incluir_passageiro(vector<Passageiro> &passageiros){
     cout<<"########### INCLUIR PASSAGEIRO ###########\n\n";
     Passageiro passageiro;
     cout<<"Nome do passageiro: ";
-    cin>>passageiro.nome;
-    // getline(cin,passageiro.nome);
-    // cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    cin.ignore();
+    getline(cin, passageiro.nome);
     cout<<"CPF do passageiro (apenas numeros): ";
     cin>>passageiro.cpf;
     if(ja_existe_passageiro_com_cpf(passageiros, passageiro.cpf) || !valida_cpf(passageiro.cpf)){
@@ -337,7 +342,9 @@ void alterar_passageiro(string cpf, vector<Passageiro> &passageiros){
             cin>>resposta;
             if(resposta == 's'){
                 cout<<"Novo nome: ";
-                cin>>passageiro.nome;
+                cin.ignore();
+                getline(cin, passageiro.nome);
+                //cin>>passageiro.nome;
             }
             cout<<"Deseja alterar o CPF do passageiro? (Digite 's' para sim ou qualquer caractere para não)";
             cin>>resposta;
@@ -483,9 +490,11 @@ void incluir_roteiro(vector<Roteiro> &roteiros, int codigoGerado){
         } while(!valida_hora(roteiro.duracao));
     }
     cout<<"Origem do roteiro: ";
-    cin>>roteiro.origin;
+    cin.ignore();
+    getline(cin, roteiro.origin);
     cout<<"Destino do roteiro: ";
-    cin>>roteiro.destino;
+    cin.clear();
+    getline(cin, roteiro.destino);
     valida_origem_destino(roteiro, 2);
 
     roteiros.push_back(roteiro);
@@ -561,14 +570,17 @@ void alterar_roteiro(vector<Roteiro> &roteiros, int codigo){
             cin>>resposta;
             if(resposta =='s'){
                 cout<<"Nova origem do roteiro: ";
-                cin>>roteiro.origin;
+                cin.ignore();
+                getline(cin, roteiro.origin);
                 valida_origem_destino(roteiro, 1);
             }
             cout<<"Deseja alterar a destino do roteiro? (Digite's' para sim ou qualquer caractere para não): ";
             cin>>resposta;
             if(resposta =='s'){
                 cout<<"Nova destino do roteiro: ";
-                cin>>roteiro.destino;
+                cin.clear();
+                cin.ignore();
+                getline(cin, roteiro.destino);
                 valida_origem_destino(roteiro, 2);
             }
             break;
@@ -694,12 +706,14 @@ void valida_origem_destino(Roteiro &roteiro, int campo){
     if(campo == 1){
         while(roteiro.origin == roteiro.destino){
             cout<<"Origem do roteiro nao pode ser igual a destino, digite outra origem: ";
-            cin>>roteiro.origin;
+            cin.clear();
+            getline(cin, roteiro.origin);
         }
     } else{
         while(roteiro.origin == roteiro.destino){
             cout<<"Destino do roteiro nao pode ser igual a origem, digite outra destino: ";
-            cin>>roteiro.destino;
+            cin.clear();
+            getline(cin, roteiro.destino);
         }
     }
 }
