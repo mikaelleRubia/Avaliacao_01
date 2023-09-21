@@ -351,6 +351,13 @@ int main()
                     break;
                 case 4:
                     // chamada da função listar embarque
+                    if(embarques.empty()){
+                        cout<<"Nao ha embarques cadastrados!"<<endl;
+                    } else {
+                        listar_Embarques(embarques);
+                    }
+                    limparBuffers();
+                    pause();
                     break;
                 case 5:
                     // chamada do Menu de Ocorrencia
@@ -1210,6 +1217,30 @@ void gerar_Embarque(vector<Embarque> &embarques, string cpf, int codigo)
     }
 }
 
+void imprimir_Embarque(Embarque embarque){
+    cout << "CPF do passageiro: " << embarque.cpf_passageiro << endl;
+    cout << "Codigo do roteiro: " << embarque.codigo_roteiro << endl;
+    cout << "Data: " << embarque.data << endl;
+    cout << "Hora: " << embarque.hora << endl;
+    cout << "Duracao: " << embarque.duracao << endl;
+    cout << "Realizada: ";
+    if(embarque.realizada == 1) cout << "Sim"<<endl;
+    else cout << "Nao" <<endl;
+}
+
+void listar_Embarques(vector<Embarque> &embarques){
+    int i = 1;
+    cout << "==========Dados dos Embarques==========\n\n";
+    for (Embarque embarque : embarques)
+    {
+        cout << "Roteiro: " << i << "ª\n\n";
+        cout << "======================================\n";
+
+        imprimir_Embarque(embarque);
+
+        cout << "======================================\n\n";
+    }
+}
 // ###########################################################################
 
 // CPFs Válidos para teste
