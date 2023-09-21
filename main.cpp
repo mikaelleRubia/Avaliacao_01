@@ -33,15 +33,15 @@ struct Roteiro
     Data data;
     string Hora;
     string duracao;
-    string origin;
+    string origem;
     string destino;
 };
 
-struct Embarca
+struct Embarque
 {
     string cpf_passageiro;
     int codigo_roteiro;
-    char realizada;
+    bool realizada;
     string data;
     string hora;
     int duracao;
@@ -80,6 +80,12 @@ void listar_Roteiro(vector<Roteiro> &);
 int localizar_Roteiro(vector<Roteiro> &);
 void alterar_Roteiro(vector<Roteiro> &);
 // Funções do sistema de Embarque
+void gerar_Embarque(vector<Embarque> &, string, int);
+bool remover_Embarque(vector<Embarque> &);
+void imprimir_Embarque(Embarque);
+void listar_Embarques(vector<Embarque> &);
+int localizar_Embarque(vector<Embarque> &);
+void alterar_Embarque(vector<Embarque> &);
 
 // Funções de validação
 bool verifica_CPF(string cpf, vector<Passageiro> &passageiros);
@@ -109,11 +115,11 @@ int main()
     }
 
     // Variaveis de suporte
-    int opcao, opcao2, aux;
+    int opcao, opcao2, aux, aux2;
     Passageiro aux_passageiro;
     Roteiro aux_roteiro;
     // vetores
-    vector<Embarca> embarca;
+    vector<Embarque> embarques;
     vector<Roteiro> roteiros;
     vector<Passageiro> passageiros;
 
@@ -322,6 +328,15 @@ int main()
                 {
                 case 1:
                     // chamada da função inserir embarque
+                    if(passageiros.empty() && roteiros.empty()){
+                        cout << "Nao ha passageiros ou roteiros cadastrados !" << endl;
+                        limparBuffers();
+                        pause();
+                    }else{
+                        aux = localizar_passageiro(passageiros);
+                        aux2 = localizar_Roteiro(roteiros);
+                        gerar_Embarque(embarques, passageiros[aux].cpf, roteiros[aux2].codigo);
+                    }
                     break;
                 case 2:
                     // chamada da função remover embarque
@@ -331,6 +346,19 @@ int main()
                     break;
                 case 4:
                     // chamada da função listar embarque
+                    break;
+                case 5:
+                    // chamada do Menu de Ocorrencia
+                    if (embarques.empty())
+                    {
+                        cout << "Nao ha Embarque cadastrado !" << endl;
+                        limparBuffers();
+                        pause();
+                    }
+                    else
+                    {
+                        
+                    }
                     break;
                 case 0:
                     break;
@@ -562,7 +590,7 @@ int Menu()
     cout << "############## Menu ##############\n\n";
     cout << "1 - Gestao de Passageiros \n";
     cout << "2 - Gestao de Roteiros \n";
-    cout << "3 - Gestao de Embarcacoes \n";
+    cout << "3 - Gestao de Embarquecoes \n";
     cout << "0 - Sair\n";
 
     int opcao;
@@ -634,6 +662,7 @@ int Menu_Embarque()
     cout << "2 - Excluir\n";
     cout << "3 - Alterar\n";
     cout << "4 - Listar\n";
+    cout << "5 - Gerencia Ocorrencias\n";
     cout << "0 - Voltar ao Menu Principal\n";
 
     int opcao;
@@ -652,7 +681,7 @@ int Menu_Alterar_Roteiro(Roteiro r)
     cout << "Data: " << r.data.data << "\n\n";
     cout << "Hora: " << r.Hora << "\n\n";
     cout << "Duracao: " << r.duracao << "\n\n";
-    cout << "Origem: " << r.origin << "\n\n";
+    cout << "Origem: " << r.origem << "\n\n";
     cout << "Destino: " << r.destino << "\n\n";
     cout << "_____________________________________________________________\n\n";
     cout << "1 - Codigo \n";
@@ -910,7 +939,7 @@ void Valida_Origem(Roteiro &roteiro)
             pause();
         }
     } while (valida);
-    roteiro.origin = origem;
+    roteiro.origem = origem;
 }
 
 void Valida_Destino(Roteiro &roteiro)
@@ -922,7 +951,7 @@ void Valida_Destino(Roteiro &roteiro)
     {
         cout << "Digite o destino do roteiro: ";
         getline(cin, destino);
-        valida = destino == roteiro.origin;
+        valida = destino == roteiro.origem;
         if (valida)
         {
             cout << "Destino invalido !\n";
@@ -971,7 +1000,7 @@ Roteiro gerar_Roteiro(vector<Roteiro> &roteiros)
     cout << "Digite a origem do roteiro: ";
 
     cin.ignore();
-    getline(cin, r.origin);
+    getline(cin, r.origem);
 
     Valida_Destino(r);
 
@@ -1000,7 +1029,7 @@ void imprimir_Roteiro(Roteiro r)
     cout << "Data: " << r.data.data << endl;
     cout << "Hora: " << r.Hora << endl;
     cout << "Duracao: " << r.duracao << endl;
-    cout << "Origin: " << r.origin << endl;
+    cout << "origem: " << r.origem << endl;
     cout << "Destino: " << r.destino << endl;
 }
 void listar_Roteiro(vector<Roteiro> &roteiros)
@@ -1032,7 +1061,6 @@ int localizar_Roteiro(vector<Roteiro> &roteiros)
     }
     return -1;
 }
-
 void alterar_Roteiro(vector<Roteiro> &roteiros)
 {
     int r;
@@ -1106,6 +1134,35 @@ void alterar_Roteiro(vector<Roteiro> &roteiros)
         cout << "Serar redirecionado para o menu Roteiros !!\n";
         limparBuffers();
         pause();
+    }
+}
+
+// Funções Gestão de Embarque
+bool verifica_Embarque(vector<Embarque> embarques, string cpf, int codigo){
+    for (Embarque e : embarques)
+    {
+        if (e.cpf_passageiro == cpf && e.codigo_roteiro == codigo)
+        {
+            return false;
+        }
+    }
+    return true;
+}
+void gerar_Embarque(vector<Embarque> &embarques, string cpf, int codigo){
+    Embarque e;
+    if(verifica_Embarque(embarques, cpf, codigo)){
+        cout << "==========Dados do Roteiro==========\n";
+        e.cpf_passageiro = cpf;
+        e.codigo_roteiro = codigo;
+        e.data = gera_data(false).data;
+        cout << "Digite a hora do embarque: ";
+        cin >> e.hora;
+        cout << "Digite a duracao do embarque: ";
+        cin >> e.duracao;
+        e.realizada = true;
+
+        cout << "======================================\n\n";
+        embarques.push_back(e);
     }
 }
 
