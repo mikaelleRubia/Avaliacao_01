@@ -83,7 +83,7 @@ int localizar_Roteiro(vector<Roteiro> &);
 void alterar_Roteiro(vector<Roteiro> &);
 // Funções do sistema de Embarque
 void gerar_Embarque(vector<Embarque> &, string, int);
-bool remover_Embarque(vector<Embarque> &);
+bool remover_Embarque(vector<Embarque> &embarques, string cpf, int codigo);
 void imprimir_Embarque(Embarque);
 void listar_Embarques(vector<Embarque> &);
 int localizar_Embarque(vector<Embarque> &);
@@ -341,10 +341,34 @@ int main()
                         aux = localizar_passageiro(passageiros);
                         aux2 = localizar_Roteiro(roteiros);
                         gerar_Embarque(embarques, passageiros[aux].cpf, roteiros[aux2].codigo);
+                        cout << "Embarque cadastrado com sucesso!" << endl;
+                        limparBuffers();
+                        pause();
                     }
                     break;
                 case 2:
                     // chamada da função remover embarque
+                    if (embarques.empty())
+                    {
+                        cout << "Nao ha embarques cadastrados!" << endl;
+                    }
+                    else
+                    {
+                        aux = localizar_passageiro(passageiros);
+                        aux2 = localizar_Roteiro(roteiros);
+
+                        if (remover_Embarque(embarques, passageiros[aux].cpf, roteiros[aux2].codigo))
+                        {
+                            cout << "Embarque removido com sucesso!" << endl;
+                        }
+                        else
+                        {
+                            cout << "Erro ao remover embarque!" << endl;
+                            cout << "Codigo e cpf inexistente ou digitados Errados!" << endl;
+                        }
+                    }
+                    limparBuffers();
+                    pause();
                     break;
                 case 3:
                     // chamada da função alterar embarque
@@ -1194,7 +1218,7 @@ void gerar_Embarque(vector<Embarque> &embarques, string cpf, int codigo)
         cin >> e.hora;
         cout << "Digite a duracao do embarque: ";
         cin >> e.duracao;
-        cout << "Informe se o embarque foi realizado: ";
+        cout << "Informe se o embarque foi realizado: \n";
         cout << "1 - Sim\n";
         cout << "2 - Nao\n";
         cout << "OBS: Digite 1 ou 2, caso contrario sera considerado como Nao !\n";
@@ -1208,6 +1232,33 @@ void gerar_Embarque(vector<Embarque> &embarques, string cpf, int codigo)
         cout << "======================================\n\n";
         embarques.push_back(e);
     }
+}
+
+void imprimir_Embarque(Embarque e)
+{
+    cout << "cpf_passageiro: " << e.cpf_passageiro << endl;
+    cout << "codigo_roteiro: " << e.codigo_roteiro << endl;
+    cout << "data: " << e.data << endl;
+    cout << "hora: " << e.hora << endl;
+    cout << "duracao: " << e.duracao << endl;
+    cout << "realizada: " << e.realizada << endl;
+}
+bool remover_Embarque(vector<Embarque> &embarques, string cpf, int codigo){
+    int tamanho = embarques.size();
+    for (int i = 0; i < tamanho; i++)
+    {
+        if (embarques[i].cpf_passageiro == cpf && embarques[i].codigo_roteiro == codigo)
+        {
+
+            cout << "Dados do embarque removidos: !\n";
+            cout << "======================================\n";
+            imprimir_Embarque(embarques[i]);
+            cout << "======================================\n";
+            embarques.erase(embarques.begin() + i);
+            return true;
+        }
+    }
+    return false;
 }
 
 // ###########################################################################
