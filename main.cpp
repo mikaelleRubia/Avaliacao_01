@@ -47,11 +47,20 @@ struct Embarca
     int duracao;
 };
 
+struct Ocorrencia{
+    string Descricao;
+    string data;
+    string hora;
+    string numero_Apolice;
+};
+
 int Menu();
 int Menu_Passageiros();
 int Menu_Alterar_Passageiro(Passageiro);
 int Menu_Roteiros();
 int Menu_Embarque();
+int Menu_Ocorrencia();
+int Menu_Alterar_Ocorrencia(Ocorrencia);
 
 // Funções do sistema de Passageiros
 Passageiro gerar_passageiro(vector<Passageiro> &);
@@ -659,6 +668,41 @@ int Menu_Alterar_Roteiro(Roteiro r)
     return opcao;
 }
 
+int Menu_Ocorrencia(){
+    cout << "############## Menu de Ocorrencia ##############\n\n";
+    cout << "1 - Incluir \n";
+    cout << "2 - Excluir\n";
+    cout << "3 - Alterar\n";
+    cout << "4 - Listar por Passageiro\n";
+    cout << "5 - Listar por Roteiro\n";
+    cout << "0 - Voltar ao Menu Principal\n";
+
+    int opcao;
+    cout << "\nEscolha uma opcao: ";
+    cin >> opcao;
+
+    return opcao;
+}
+
+int Menu_Alterar_Ocorrencia(Ocorrencia o){
+    int opcao;
+    cout << "############## Alterar dados de Ocorrencia ##############\n\n";
+    cout << "Descricao: " << o.Descricao << "\n\n";
+    cout << "Data: " << o.data << "\n\n";
+    cout << "Hora: " << o.hora << "\n\n";
+    cout << "Codigo: " << o.numero_Apolice << "\n\n";
+    cout << "_____________________________________________________________\n\n";
+    cout << "1 - Descricao \n";
+    cout << "2 - Data \n";
+    cout << "3 - Hora \n";
+    cout << "4 - Numero de Apolice\n";
+    cout << "0 - Voltar ao Menu Ocorrencia\n";
+
+    cout << "\nEscolha uma opcao: ";
+    cin >> opcao;
+    
+    return opcao;
+}
 // ###########################################################################
 
 // Funções de gestão de passageiros
