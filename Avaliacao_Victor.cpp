@@ -9,6 +9,7 @@
 #include <ctime>
 #include <limits>
 #include <sstream>
+#include <regex>
 using namespace std;
 
 struct Data{
@@ -62,6 +63,7 @@ bool valida_hora(string horaString);
 bool ja_existe_passageiro_com_cpf(vector<Passageiro> &passageiros, string cpf);
 bool valida_numero_autorizacao(string numero);
 void valida_origem_destino(Roteiro &roteiro, int campo);
+bool valida_cpf(string &cpf);
 
 int main(){
 
@@ -260,14 +262,14 @@ void incluir_passageiro(vector<Passageiro> &passageiros){
     cin>>passageiro.nome;
     // getline(cin,passageiro.nome);
     // cin.ignore(numeric_limits<streamsize>::max(), '\n');
-    cout<<"CPF do passageiro: ";
+    cout<<"CPF do passageiro (apenas numeros): ";
     cin>>passageiro.cpf;
-    if(ja_existe_passageiro_com_cpf(passageiros, passageiro.cpf)){
+    if(ja_existe_passageiro_com_cpf(passageiros, passageiro.cpf) || !valida_cpf(passageiro.cpf)){
         do{
             //limpaTela();
-            cout<<"Já existe um passageiro com este CPF! Digite outro: ";
+            cout<<"Já existe um passageiro com este CPF ou este cpf esta invalido! Digite outro (apenas numeros): ";
             cin>>passageiro.cpf;
-        } while(ja_existe_passageiro_com_cpf(passageiros, passageiro.cpf));
+        } while(ja_existe_passageiro_com_cpf(passageiros, passageiro.cpf) || !valida_cpf(passageiro.cpf));
     }
     cout<<"Data de nascimento (dd/MM/yyyy):"<<endl;
     cout<<"Dia: ";
@@ -340,8 +342,14 @@ void alterar_passageiro(string cpf, vector<Passageiro> &passageiros){
             cout<<"Deseja alterar o CPF do passageiro? (Digite 's' para sim ou qualquer caractere para não)";
             cin>>resposta;
             if(resposta =='s'){
-                cout<<"Novo CPF: ";
+                cout<<"Novo CPF (apenas numeros): ";
                 cin>>passageiro.cpf;
+                if(ja_existe_passageiro_com_cpf(passageiros, passageiro.cpf) || !valida_cpf(passageiro.cpf)){
+                    do{
+                        cout<<"Já existe um passageiro com este CPF ou este cpf esta invalido! Digite outro (apenas numeros): ";
+                        cin>>passageiro.cpf;
+                    } while(ja_existe_passageiro_com_cpf(passageiros, passageiro.cpf) || !valida_cpf(passageiro.cpf));
+                }
             }
             cout<<"Deseja alterar a data de nascimento do passageiro? (Digite 's' para sim ou qualquer caractere para não)";
             cin>>resposta;
@@ -616,6 +624,13 @@ bool ja_existe_passageiro_com_cpf(vector<Passageiro> &passageiros, string cpf){
         }
     }
     return false;
+}
+
+bool valida_cpf(string &cpf){
+
+    regex datePattern(R"(\d{11})");
+
+    return regex_match(cpf, datePattern);
 }
 
 int calcula_idade(Data data){
