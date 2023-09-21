@@ -1,6 +1,8 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <regex>
+#include <iomanip>
 
 using namespace std;
 
@@ -23,6 +25,8 @@ void excluirRoteiros(vector<Roteiro>&  roteiros);
 void localizarRoteiros(vector<Roteiro>&  roteiros);
 void alterarRoteiro(vector<Roteiro>& roteiros);
 bool existeCodigoRoteiro(const vector<Roteiro>& roteiros, const string& codigo);
+bool validaRepeticaoSiadaDestino(string destino, string origem);
+bool validaHorario(string& horario) ;
 
 void limpaTela_palse();
 void palse();
@@ -143,11 +147,24 @@ void incluirRoteiros(vector<Roteiro>& roteiros)
         cout << " Digite a Origem do Roteiro: " << endl;
         cin >> roteiro.origin;
 
+        if (validaRepeticaoSiadaDestino(roteiro.destino, roteiro.origin))
+        {
+            cout << "O destino não pode ser o mesmo que a origem. Tente novamente." << endl;
+            continue;
+        }
+
+
         cout << " Digite a Data do Roteiro: " << endl;
         cin >> roteiro.Data;
 
         cout << " Digite a Hora do Roteiro: " << endl;
         cin >> roteiro.Hora;
+
+        if (!validaHorario(roteiro.Hora))
+        {
+            cout << "A hora de ser no formato hh:mm." << endl;
+            continue;
+        }
 
         cout << " Digite a Dracao do Roteiro: " << endl;
         cin >> roteiro.duracao;
@@ -310,3 +327,19 @@ void alterarRoteiro(vector<Roteiro>& roteiros)
 
     cout << "Roteiro com código " << codigo << " não encontrado." << endl;
 }
+
+bool validaRepeticaoSiadaDestino(string destino, string origem)
+{  
+
+    if(destino == origem){
+        return true;
+    };
+    return false;
+};
+
+bool validaHorario(string& horario) 
+{ // faz fica no formato hh:mm
+    regex datePattern(R"(\d{2}:\d{2})");
+
+    return regex_match(horario, datePattern);
+};

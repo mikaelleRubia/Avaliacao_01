@@ -12,7 +12,7 @@ struct Passageiro
     string nome;
     string cpf;
     string dt_nascimento;
-    int num_Autorizacao;
+    string num_Autorizacao;
 };
 
 
@@ -23,6 +23,9 @@ void excluirPassageiros(vector<Passageiro>& passageiros);
 void localizarPassageiros(vector<Passageiro>& passageiros);
 void alterarPassageiro(vector<Passageiro>& passageiros);
 bool valida_idade(const string& dataNascimento);
+bool validaCPF(string& cpf);
+bool cpf_cadastrado(vector <Passageiro> &passageiro, string &cpf);
+
 bool validaDataNascimento(string& data_nascimento);  
 
 void limpaTela_palse();
@@ -105,13 +108,13 @@ int Menu()
     cout << "############## Menu ##############\n\n";
     cout << "1 - Incluir \n";
     cout << "2 - Excluir\n";
-    cout << "3 - Alterar CPF\n";
+    cout << "3 - Alterar pelo CPF\n";
     cout << "4 - Listar\n";
     cout << "5 - Localizar\n";
     cout << "0 - Sair\n";
 
     int opcao;
-    wcout << L"\nEscolha uma opção: ";
+    wcout << L"\nEscolha uma opcao: ";
     cin >> opcao;
 
     return opcao;
@@ -134,6 +137,22 @@ void incluirPassageiros(vector<Passageiro>& passageiros)
 
         cout << "Digite o CPF do Passageiro: " << endl;
         cin >> passageiro.cpf;
+
+         passageiro.cpf.erase(remove_if(passageiro.cpf.begin(), passageiro.cpf.end(), [](char c) { return !isdigit(c); }), passageiro.cpf.end());
+
+        if (!validaCPF(passageiro.cpf))
+        {
+            cout << "CPF inválido. Tente novamente." << endl;
+            continue;
+        }
+
+        // Verificar se o CPF já está cadastrado
+        if (cpf_cadastrado(passageiros, passageiro.cpf))
+        {
+            cout << "Este CPF já está cadastrado. Tente novamente." << endl;
+            continue;
+        }
+
         
 
         cout << "Digite a Data de Nascimento do Passageiro (dd/mm/aaaa): " << endl;
@@ -158,6 +177,7 @@ void incluirPassageiros(vector<Passageiro>& passageiros)
             continue; 
         }
         passageiro.dt_nascimento = data;
+        passageiro.num_Autorizacao = "Maior";
         passageiros.push_back(passageiro);
         cout << "Passageiro incluído com sucesso!" << endl;
 
@@ -286,6 +306,29 @@ void alterarPassageiro(vector<Passageiro>& passageiros)
                 getline(cin, passageiro.nome);
             }
 
+            cout << "Deseja alterar o CPF (s/n)? ";
+            cin >> resposta;
+            if (resposta == 's')
+            {
+                string novoCPF;
+                cout << "Digite o novo CPF: ";
+                cin >> novoCPF;
+
+                if (!validaCPF(passageiro.cpf))
+                {
+                    cout << "CPF inválido. Tente novamente." << endl;
+                    continue;
+                }
+                // Verificar se o novo CPF já está cadastrado
+                if (cpf_cadastrado(passageiros, novoCPF))
+                {
+                    cout << "Este CPF já está cadastrado. Tente novamente." << endl;
+                    continue;
+                }
+
+                passageiro.cpf = novoCPF;
+            }
+
             cout << "Deseja alterar a Data de Nascimento (s/n)? ";
             cin >> resposta;
             if (resposta == 's')
@@ -326,3 +369,23 @@ void alterarPassageiro(vector<Passageiro>& passageiros)
 
     cout << "Passageiro com CPF " << cpf << " não encontrado." << endl;
 }
+
+bool cpf_cadastrado(vector <Passageiro> &passageiro, string &cpf)
+{
+    if(passageiro.size()> 0){    
+        for (const Passageiro& passageiro : passageiro) {
+            if(passageiro.cpf == cpf){
+                return true;
+            };
+        };
+    };
+    return false;
+
+};
+bool validaCPF(string& cpf) // cpf dev conter 11 numeros
+{
+    regex datePattern(R"(\d{3}\.\d{3}\.\d{3}-\d{2}|\d{11})");
+
+    return regex_match(cpf, datePattern);
+
+};
