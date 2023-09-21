@@ -67,6 +67,8 @@ void dados_roteiros(vector <Roteiro> &roteiro, int codigo);
 void incluir_roteiro(vector <Roteiro> &roteiro);
 bool codigo_roteiro_cadastrado(vector <Roteiro> &roteiro, int codigo);
 bool valida_destino_origem(string destino, string origem);
+bool valida_horario(string& horario);
+
 
 
 void limpa_tela_pause();
