@@ -375,6 +375,13 @@ int main()
                     break;
                 case 4:
                     // chamada da função listar embarque
+                    if(embarques.empty()){
+                        cout<<"Nao ha embarques cadastrados!"<<endl;
+                    } else {
+                        listar_Embarques(embarques);
+                    }
+                    limparBuffers();
+                    pause();
                     break;
                 case 5:
                     // chamada do Menu de Ocorrencia
@@ -1241,7 +1248,10 @@ void imprimir_Embarque(Embarque e)
     cout << "data: " << e.data << endl;
     cout << "hora: " << e.hora << endl;
     cout << "duracao: " << e.duracao << endl;
-    cout << "realizada: " << e.realizada << endl;
+    cout << "realizada: ";
+    if(e.realizada == 1) cout<<"Sim"<<endl;
+    else cout<<"Nao"<<endl;
+    // << e.realizada << endl;
 }
 bool remover_Embarque(vector<Embarque> &embarques, string cpf, int codigo){
     int tamanho = embarques.size();
@@ -1261,6 +1271,19 @@ bool remover_Embarque(vector<Embarque> &embarques, string cpf, int codigo){
     return false;
 }
 
+void listar_Embarques(vector<Embarque> &embarques){
+    int i = 1;
+    cout << "==========Dados dos Embarques==========\n\n";
+    for (Embarque embarque : embarques)
+    {
+        cout << "Roteiro: " << i << "ª\n\n";
+        cout << "======================================\n";
+
+        imprimir_Embarque(embarque);
+
+        cout << "======================================\n\n";
+    }
+}
 // ###########################################################################
 
 // CPFs Válidos para teste
