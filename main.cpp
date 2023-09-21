@@ -1255,6 +1255,7 @@ void imprimir_Embarque(Embarque e)
 }
 bool remover_Embarque(vector<Embarque> &embarques, string cpf, int codigo){
     int tamanho = embarques.size();
+    int opcao;
     for (int i = 0; i < tamanho; i++)
     {
         if (embarques[i].cpf_passageiro == cpf && embarques[i].codigo_roteiro == codigo)
@@ -1263,9 +1264,17 @@ bool remover_Embarque(vector<Embarque> &embarques, string cpf, int codigo){
             cout << "Dados do embarque removidos: !\n";
             cout << "======================================\n";
             imprimir_Embarque(embarques[i]);
-            cout << "======================================\n";
-            embarques.erase(embarques.begin() + i);
-            return true;
+            cout << "======================================\n\n";
+            cout << "Deseja realmente remover o embarque?\n";
+            cout << "1 - Sim\n";
+            cout << "2 - Nao\n";
+            cout << "OBS: Digite 1 ou 2, caso contrario sera considerado como Nao!\n";
+            cin >> opcao;
+
+            if(opcao == 1){
+                embarques.erase(embarques.begin() + i);
+                return true;
+            }
         }
     }
     return false;
