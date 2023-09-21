@@ -24,8 +24,6 @@ struct Passageiro
     string cpf;
     Data dt_nascimento;
     int num_Autorizacao = 0;
-    bool vazio = true;
-
     int idade();
 };
 
@@ -571,6 +569,10 @@ int Menu_Alterar_Passageiro(Passageiro p)
 
     cout << "############## Alterar dados de Passageiro ##############\n\n";
     cout << "Passageiro: " << p.nome << "\n\n";
+    cout << "CPF: " << p.cpf << "\n\n";
+    cout << "Data de Nascimento: " << p.dt_nascimento.data << "\n\n";
+    p.num_Autorizacao != 0 ? cout << "Numero de Autorizacao: " << p.num_Autorizacao << "\n\n": cout << "Numero de Autorizacao: Maior de idade" << "\n\n";
+    cout << "_____________________________________________________________\n\n";
     cout << "1 - Nome \n";
     cout << "2 - CPF \n";
     cout << "3 - Data de Nascimento \n";
@@ -632,11 +634,18 @@ int Menu_Embarque()
     return opcao;
 }
 
-int Menu_Alterar_Roteiro()
+int Menu_Alterar_Roteiro(Roteiro r)
 {
     int opcao;
 
     cout << "############## Alterar dados de Roteiro ##############\n\n";
+    cout << "Codigo: " << r.codigo << "\n\n";
+    cout << "Data: " << r.data.data << "\n\n";
+    cout << "Hora: " << r.Hora << "\n\n";
+    cout << "Duracao: " << r.duracao << "\n\n";
+    cout << "Origem: " << r.origin << "\n\n";
+    cout << "Destino: " << r.destino << "\n\n";
+    cout << "_____________________________________________________________\n\n";
     cout << "1 - Codigo \n";
     cout << "2 - Data \n";
     cout << "3 - Hora \n";
@@ -990,7 +999,7 @@ void alterar_Roteiro(vector<Roteiro> &roteiros)
     {
         do
         {
-            opcao = Menu_Alterar_Roteiro();
+            opcao = Menu_Alterar_Roteiro(roteiros[r]);
             limpaTela();
             limparBuffers();
             switch (opcao)
