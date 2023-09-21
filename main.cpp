@@ -1183,6 +1183,7 @@ bool verifica_Embarque(vector<Embarque> embarques, string cpf, int codigo)
 void gerar_Embarque(vector<Embarque> &embarques, string cpf, int codigo)
 {
     Embarque e;
+    int opcao;
     if (verifica_Embarque(embarques, cpf, codigo))
     {
         cout << "==========Dados do Roteiro==========\n";
@@ -1193,8 +1194,17 @@ void gerar_Embarque(vector<Embarque> &embarques, string cpf, int codigo)
         cin >> e.hora;
         cout << "Digite a duracao do embarque: ";
         cin >> e.duracao;
-        e.realizada = true;
-
+        cout << "Informe se o embarque foi realizado: ";
+        cout << "1 - Sim\n";
+        cout << "2 - Nao\n";
+        cout << "OBS: Digite 1 ou 2, caso contrario sera considerado como Nao !\n";
+        cin >> opcao;
+        if (opcao == 1)
+        {
+            e.realizada = true;
+        }else{
+            e.realizada = false;
+        }
         cout << "======================================\n\n";
         embarques.push_back(e);
     }
