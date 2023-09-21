@@ -38,6 +38,14 @@ struct Roteiro
     string destino;
 };
 
+struct Ocorrencia
+{
+    string Descricao;
+    string data;
+    string hora;
+    string numero_Apolice;
+};
+
 struct Embarque
 {
     string cpf_passageiro;
@@ -46,14 +54,7 @@ struct Embarque
     string data;
     string hora;
     int duracao;
-};
-
-struct Ocorrencia
-{
-    string Descricao;
-    string data;
-    string hora;
-    string numero_Apolice;
+    Ocorrencia ocorrencia;
 };
 
 int Menu();
@@ -203,14 +204,17 @@ int main()
                     }
                     else
                     {
-
                         aux = localizar_passageiro(passageiros);
-
-                        cout << "\nPassageiro localizado segue os dados: \n"
-                             << endl;
-                        cout << "\n=======================================" << endl;
-                        imprimir_passageiro(passageiros[aux]);
-                        cout << "\n=======================================" << endl;
+                        if (aux != -1)
+                        {
+                            cout << "\nPassageiro localizado segue os dados: \n"
+                                 << endl;
+                            cout << "\n=======================================" << endl;
+                            imprimir_passageiro(passageiros[aux]);
+                            cout << "\n=======================================" << endl;
+                        }else{
+                            cout << "\nPassageiro nao localizado !" << endl;
+                        }
                     }
                     limparBuffers();
                     pause();
@@ -299,13 +303,16 @@ int main()
                     {
 
                         aux = localizar_Roteiro(roteiros);
-
+                        if(aux != -1){
                         cout << "Roteiro localizado segue os dados: " << endl;
                         cout << "=======================================" << endl;
 
                         imprimir_Roteiro(roteiros[aux]);
 
                         cout << "=======================================" << endl;
+                        }else{
+                            cout << "Roteiro nao localizado !" << endl;
+                        }
                     }
                     limparBuffers();
                     pause();
@@ -1226,7 +1233,9 @@ void gerar_Embarque(vector<Embarque> &embarques, string cpf, int codigo)
         if (opcao == 1)
         {
             e.realizada = true;
-        }else{
+        }
+        else
+        {
             e.realizada = false;
         }
         cout << "======================================\n\n";
@@ -1243,7 +1252,8 @@ void imprimir_Embarque(Embarque e)
     cout << "duracao: " << e.duracao << endl;
     cout << "realizada: " << e.realizada << endl;
 }
-bool remover_Embarque(vector<Embarque> &embarques, string cpf, int codigo){
+bool remover_Embarque(vector<Embarque> &embarques, string cpf, int codigo)
+{
     int tamanho = embarques.size();
     for (int i = 0; i < tamanho; i++)
     {
