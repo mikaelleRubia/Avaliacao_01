@@ -98,6 +98,7 @@ bool remover_ocorrencia(vector<Embarque> &embarques);
 void listar_ocorrenciaPorRoteiro(vector<Embarque> &embarques);
 void listar_ocorrenciaPorCPF(vector<Embarque> &embarques);
 void alterar_OcorrenciaPorCPF(vector<Embarque> &embarques);
+void registrar_ocorrencia_por_roteiro(int, vector<Roteiro> &, vector<Embarque> &);
 
 // Funções de validação
 bool verifica_CPF(string cpf, vector<Passageiro> &passageiros);
@@ -522,6 +523,19 @@ int main()
                         limparBuffers();
                         pause();
                         break;
+                    case 6:
+                        if(roteiros.empty()){
+                            cout << "Nao ha roteiros cadastrados!" << endl;
+                        } else if(embarques.empty()){
+                            cout << "Nao ha embarques cadastrados!" << endl;
+                        } else {
+                            cout<<"Digite o codigo do roteiro: ";
+                            cin>>aux;
+                            registrar_ocorrencia_por_roteiro(aux, roteiros, embarques);
+                        }
+                        limparBuffers();
+                        pause();
+                        break;
                     case 0:
                         break;
                     default:
@@ -870,6 +884,7 @@ int Menu_Ocorrencia()
     cout << "3 - Alterar\n";
     cout << "4 - Listar por Passageiro\n";
     cout << "5 - Listar por Roteiro\n";
+    cout << "6 - Registrar Ocorrencia por Roteiro\n";
     cout << "0 - Voltar ao Menu Principal\n";
 
     int opcao;
@@ -1618,12 +1633,14 @@ void gerar_ocorrencia(vector<Embarque> &embarques, Ocorrencia &ocorrencia)
             {
                 if (e.cpf_passageiro == cpf && e.codigo_roteiro == codigo)
                 {
-                    e.ocorrencia = ocorrencia;
-                    std::cout << "Ocorrência cadastrada com sucesso!" << std::endl;
+                    if(e.realizada == false){
+                        cout<<"Esse embarque nao foi realizado"<<endl;
+                    } else {
+                        e.ocorrencia = ocorrencia;
+                        std::cout << "Ocorrência cadastrada com sucesso!" << std::endl;
+                    }
                 }
             }
-            cout << "======================================\n\n";
-            cout << "Ocorrencia cadastrado com sucesso!" << endl;
         };
     } while (verifica_embarques != true);
 };
@@ -1801,3 +1818,59 @@ void listar_ocorrenciaPorRoteiro(vector<Embarque> &embarques)
     16188894000
     46429599043
 */
+
+void registrar_ocorrencia_por_roteiro(int codigo, vector<Roteiro> &roteiros, vector<Embarque> &embarques){
+    if(verifica_codigo(codigo, roteiros)){
+        cout<<"Nao existe um roteiro com esse codigo!"<<endl;
+    } else {
+        Ocorrencia ocorrencia;
+
+        cout << "Digite a descrição da ocorrência: ";
+        cin.ignore(); // Limpe o buffer do teclado antes de ler a descrição.
+        getline(cin, ocorrencia.Descricao);
+
+        do
+        {
+            cout << "Digite o numero da apólice: ";
+            cin >> ocorrencia.numero_Apolice;
+            if (verifica_apolice_cadastro(embarques, ocorrencia.numero_Apolice))
+            {
+                cout << "Apolice já cadastrada, tente outra." << endl;
+                limparBuffers();
+                pause();
+            }
+        } while (verifica_apolice_cadastro(embarques, ocorrencia.numero_Apolice));
+
+        do
+        {
+            cout << "Digite a Data da ocorrência (formato: DD/MM/AAAA): ";
+            cin >> ocorrencia.data;
+            if (!valida_data(ocorrencia.data))
+            {
+                cout << "Nascimento do passageiro invalida tente novamente." << endl;
+                limparBuffers();
+                pause();
+            }
+        } while (!valida_data(ocorrencia.data));
+
+        do
+        {
+            cout << "Digite a hora da ocorrência(00:00): ";
+            cin >> ocorrencia.hora;
+            if (!valida_horario(ocorrencia.hora))
+            {
+                cout << "Horario invalido, tente novamente." << endl;
+                limparBuffers();
+                pause();
+            }
+        } while (!valida_horario(ocorrencia.hora));
+
+        for(Embarque &embarque : embarques){
+            if(embarque.codigo_roteiro == codigo && embarque.realizada == true){
+                embarque.ocorrencia = ocorrencia;
+            }
+        }
+
+        cout<<"Ocorrencia registrada nos embarques realizados para o roteiro com o codigo "<<codigo<<endl;
+    }
+}
