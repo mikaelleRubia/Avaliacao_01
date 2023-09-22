@@ -4,7 +4,6 @@
 #include <limits>
 #include <ctime>
 #include <regex>
-#include <ctype.h>
 
 using namespace std;
 
@@ -46,7 +45,6 @@ struct Ocorrencia
     string hora;
     string numero_Apolice;
 };
-
 struct Embarque
 {
     string cpf_passageiro;
@@ -56,7 +54,9 @@ struct Embarque
     string hora;
     int duracao;
     Ocorrencia ocorrencia;
+
 };
+
 
 int Menu();
 int Menu_Passageiros();
@@ -89,8 +89,7 @@ bool remover_Embarque(vector<Embarque> &embarques, string cpf, int codigo);
 void imprimir_Embarque(Embarque);
 void listar_Embarques(vector<Embarque> &);
 int localizar_Embarque(vector<Embarque> &);
-void alterar_Embarque(int, vector<Embarque> &, vector<Passageiro> &);
-Passageiro get_passageiro_por_cpf(string, vector<Passageiro> );
+void alterar_Embarque(vector<Embarque> &);
 
 //Funções de Ocorrencia
 void gerar_ocorrencia(vector<Embarque> &embarques,  Ocorrencia& ocorrencia);
@@ -172,7 +171,7 @@ int main()
                         }
                         else
                         {
-                            cout << "Erro ou Desistencia, ao/da remover/remocao o/do passageiro !" << endl;
+                            cout << "Erro ao remover passageiro !" << endl;
                             cout << "CPF inexistente ou CPF digitado Errado !" << endl;
                         }
                     }
@@ -214,17 +213,14 @@ int main()
                     }
                     else
                     {
+
                         aux = localizar_passageiro(passageiros);
-                        if (aux != -1)
-                        {
-                            cout << "\nPassageiro localizado segue os dados: \n"
-                                 << endl;
-                            cout << "\n=======================================" << endl;
-                            imprimir_passageiro(passageiros[aux]);
-                            cout << "\n=======================================" << endl;
-                        }else{
-                            cout << "\nPassageiro nao localizado !" << endl;
-                        }
+
+                        cout << "\nPassageiro localizado segue os dados: \n"
+                             << endl;
+                        cout << "\n=======================================" << endl;
+                        imprimir_passageiro(passageiros[aux]);
+                        cout << "\n=======================================" << endl;
                     }
                     limparBuffers();
                     pause();
@@ -270,7 +266,7 @@ int main()
                         }
                         else
                         {
-                            cout << "Erro ou Desistencia, ao/da remover/remocao o/do roteiro !" << endl;
+                            cout << "Erro ao remover o roteiro !" << endl;
                             cout << "Codigo inexistente ou digitado Errado !" << endl;
                         }
                     }
@@ -313,16 +309,13 @@ int main()
                     {
 
                         aux = localizar_Roteiro(roteiros);
-                        if(aux != -1){
+
                         cout << "Roteiro localizado segue os dados: " << endl;
                         cout << "=======================================" << endl;
 
                         imprimir_Roteiro(roteiros[aux]);
 
                         cout << "=======================================" << endl;
-                        }else{
-                            cout << "Roteiro nao localizado !" << endl;
-                        }
                     }
                     limparBuffers();
                     pause();
@@ -349,7 +342,7 @@ int main()
                     // chamada da função inserir embarque
                     if (passageiros.empty() && roteiros.empty())
                     {
-                        cout << "\nNao ha passageiros ou roteiros cadastrados !" << endl;
+                        cout << "Nao ha passageiros ou roteiros cadastrados !" << endl;
                         limparBuffers();
                         pause();
                     }
@@ -357,14 +350,8 @@ int main()
                     {
                         aux = localizar_passageiro(passageiros);
                         aux2 = localizar_Roteiro(roteiros);
-                        if(aux != -1 && aux2 != -1){
-                            gerar_Embarque(embarques, passageiros[aux].cpf, roteiros[aux2].codigo);
-                            cout << "\nEmbarque cadastrado com sucesso!" << endl;
-                        }else{
-                            cout << "\nEmbarque nao localizado !" << endl;
-                            cout << "Codigo e cpf inexistente ou digitados Errados !" << endl;
-                        }
-                        
+                        gerar_Embarque(embarques, passageiros[aux].cpf, roteiros[aux2].codigo);
+                        cout << "Embarque cadastrado com sucesso!" << endl;
                         limparBuffers();
                         pause();
                     }
@@ -373,7 +360,7 @@ int main()
                     // chamada da função remover embarque
                     if (embarques.empty())
                     {
-                        cout << "\nNao ha embarques cadastrados!" << endl;
+                        cout << "Nao ha embarques cadastrados!" << endl;
                     }
                     else
                     {
@@ -382,11 +369,11 @@ int main()
 
                         if (remover_Embarque(embarques, passageiros[aux].cpf, roteiros[aux2].codigo))
                         {
-                            cout << "\nEmbarque removido com sucesso!" << endl;
+                            cout << "Embarque removido com sucesso!" << endl;
                         }
                         else
                         {
-                            cout << "\nErro ou Desistencia, ao/da remover/remocao o/do embarque!" << endl;
+                            cout << "Erro ao remover embarque!" << endl;
                             cout << "Codigo e cpf inexistente ou digitados Errados!" << endl;
                         }
                     }
@@ -395,20 +382,11 @@ int main()
                     break;
                 case 3:
                     // chamada da função alterar embarque
-                    cout<<"Digite o codigo do roteiro relacionado ao embarque: " ;
-                    cin>>aux;
-                    if(verifica_codigo(aux, roteiros))
-                        cout<<"Nao existe um roteiro com esse codigo!"<<endl;
-                    else{
-                        alterar_Embarque(aux, embarques, passageiros);
-                    }
-                    limparBuffers();
-                    pause();
                     break;
                 case 4:
                     // chamada da função listar embarque
                     if(embarques.empty()){
-                        cout<<"\nNao ha embarques cadastrados!"<<endl;
+                        cout<<"Nao ha embarques cadastrados!"<<endl;
                     } else {
                         listar_Embarques(embarques);
                     }
@@ -417,7 +395,7 @@ int main()
                     break;
                 case 5:
                     // chamada do Menu de Ocorrencia
-                    do
+                   do
                     {
                         limpaTela();
                         opcao2 = Menu_Ocorrencia();
@@ -728,7 +706,6 @@ int Menu()
     cout << "1 - Gestao de Passageiros \n";
     cout << "2 - Gestao de Roteiros \n";
     cout << "3 - Gestao de Embarquecoes \n";
-    cout << "4 - Gestao de Ocorrencias \n";
     cout << "0 - Sair\n";
 
     int opcao;
@@ -952,26 +929,14 @@ int localizar_passageiro(vector<Passageiro> &passageiros)
 bool remover_passageiro(vector<Passageiro> &passageiros)
 {
     string cpf;
-    int i,opcao;
+    int i;
 
     i = localizar_passageiro(passageiros);
 
     if (i != -1)
     {
-        cout << "Dados do Passageiro a remover: !\n";
-            cout << "======================================\n";
-            imprimir_passageiro(passageiros[i]);
-            cout << "======================================\n\n";
-            cout << "Deseja realmente remover o passageiro?\n";
-            cout << "1 - Sim\n";
-            cout << "2 - Nao\n";
-            cout << "OBS: Digite 1 ou 2, caso contrario sera considerado como Nao!\n";
-            cin >> opcao;
-
-            if(opcao == 1){
-                passageiros.erase(passageiros.begin() + i);
-                return true;
-            }
+        passageiros.erase(passageiros.begin() + i);
+        return true;
     }
 
     return false;
@@ -1184,7 +1149,7 @@ Roteiro gerar_Roteiro(vector<Roteiro> &roteiros)
 }
 bool remover_Roteiro(vector<Roteiro> &roteiros)
 {
-    int codigo, opcao;
+    int codigo;
     int tamanho = roteiros.size();
     cout << "Digite o codigo do roteiro que deseja remover: ";
     cin >> codigo;
@@ -1192,20 +1157,8 @@ bool remover_Roteiro(vector<Roteiro> &roteiros)
     {
         if (roteiros[i].codigo == codigo)
         {
-            cout << "Dados do Roteiro a remover: !\n";
-            cout << "======================================\n";
-            imprimir_Roteiro(roteiros[i]);
-            cout << "======================================\n\n";
-            cout << "Deseja realmente remover o roteiro?\n";
-            cout << "1 - Sim\n";
-            cout << "2 - Nao\n";
-            cout << "OBS: Digite 1 ou 2, caso contrario sera considerado como Nao!\n";
-            cin >> opcao;
-
-            if(opcao == 1){
-                roteiros.erase(roteiros.begin() + i);
-                return true;
-            }
+            roteiros.erase(roteiros.begin() + i);
+            return true;
         }
     }
     return false;
@@ -1248,6 +1201,8 @@ int localizar_Roteiro(vector<Roteiro> &roteiros)
     }
     return -1;
 }
+
+
 void alterar_Roteiro(vector<Roteiro> &roteiros)
 {
     int r;
@@ -1360,9 +1315,7 @@ void gerar_Embarque(vector<Embarque> &embarques, string cpf, int codigo)
         if (opcao == 1)
         {
             e.realizada = true;
-        }
-        else
-        {
+        }else{
             e.realizada = false;
         }
         cout << "======================================\n\n";
@@ -1382,8 +1335,7 @@ void imprimir_Embarque(Embarque e)
     else cout<<"Nao"<<endl;
     // << e.realizada << endl;
 }
-bool remover_Embarque(vector<Embarque> &embarques, string cpf, int codigo)
-{
+bool remover_Embarque(vector<Embarque> &embarques, string cpf, int codigo){
     int tamanho = embarques.size();
     int opcao;
     for (int i = 0; i < tamanho; i++)
@@ -1391,7 +1343,7 @@ bool remover_Embarque(vector<Embarque> &embarques, string cpf, int codigo)
         if (embarques[i].cpf_passageiro == cpf && embarques[i].codigo_roteiro == codigo)
         {
 
-            cout << "Dados do embarque a remover: !\n";
+            cout << "Dados do embarque removidos: !\n";
             cout << "======================================\n";
             imprimir_Embarque(embarques[i]);
             cout << "======================================\n\n";
@@ -1410,62 +1362,12 @@ bool remover_Embarque(vector<Embarque> &embarques, string cpf, int codigo)
     return false;
 }
 
-void alterar_Embarque(int codigo, vector<Embarque> &embarques, vector<Passageiro> &passageiros){
-    for(Embarque embarque : embarques){
-        if(embarque.codigo_roteiro == codigo){
-            Passageiro passageiro = get_passageiro_por_cpf(embarque.cpf_passageiro, passageiros);
-            imprimir_passageiro(passageiro);
-        }
-    }
-
-    cout<<"Digite o cpf do passageiro relacionado ao embarque: ";
-    string cpf;
-    cin>>cpf;
-    if(validarCPF(cpf)){
-        for(Embarque &embarque : embarques){
-            if(embarque.cpf_passageiro == cpf && embarque.codigo_roteiro == codigo){
-                string duracaoString;
-                cout<<"Digite a duracao real do embarque: ";
-                cin>>duracaoString;
-                bool eNumero = true;
-                // string duracaoString = to_string(duracao);
-                for(char caractere : duracaoString){
-                    if(!isdigit(caractere)){
-                        cout<<"Digite um valor numerico para a duracao do embarque!"<<endl;
-                        eNumero = false;
-                        break;
-                    }
-                }
-                if(eNumero){
-                    int duracao = stoi(duracaoString);
-                    embarque.duracao = duracao;
-                    cout<<"Embarque alterado com sucesso!";
-                }
-                return;
-            }
-        }
-
-        cout<<"Um passageiro com esse cpf nao existe ou na esta relacionado a esse embarque."<<endl;
-    } else{
-        cout<<"CPF invalido"<<endl;
-    }
-}
-
-Passageiro get_passageiro_por_cpf(string cpf, vector<Passageiro> passageiros){
-    for(Passageiro passageiro : passageiros){
-        if(passageiro.cpf == cpf){
-            return passageiro;
-        }
-    }
-    return Passageiro();
-}
-
 void listar_Embarques(vector<Embarque> &embarques){
     int i = 1;
     cout << "==========Dados dos Embarques==========\n\n";
     for (Embarque embarque : embarques)
     {
-        cout << "Embarque: " << i << "ª\n\n";
+        cout << "Roteiro: " << i << "ª\n\n";
         cout << "======================================\n";
 
         imprimir_Embarque(embarque);
@@ -1473,7 +1375,6 @@ void listar_Embarques(vector<Embarque> &embarques){
         cout << "======================================\n\n";
     }
 }
-
 bool valida_data(string& data) {
         /**
          * valida_data: Esta função valida o data utilizando um regex.
@@ -1484,7 +1385,6 @@ bool valida_data(string& data) {
 
     return regex_match(data, datePattern);
 };
-
 bool verifica_apolice_cadastro(vector<Embarque> &embarques, string& apolice) {
     for (Embarque embarque : embarques){
         if(embarque.ocorrencia.numero_Apolice == apolice){
