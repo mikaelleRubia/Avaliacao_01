@@ -88,7 +88,8 @@ bool remover_Embarque(vector<Embarque> &embarques, string cpf, int codigo);
 void imprimir_Embarque(Embarque);
 void listar_Embarques(vector<Embarque> &);
 int localizar_Embarque(vector<Embarque> &);
-void alterar_Embarque(vector<Embarque> &);
+void alterar_Embarque(int, vector<Embarque> &, vector<Passageiro> &);
+Passageiro get_passageiro_por_cpf(string, vector<Passageiro> );
 
 // Funções de validação
 bool verifica_CPF(string cpf, vector<Passageiro> &passageiros);
@@ -379,6 +380,15 @@ int main()
                     break;
                 case 3:
                     // chamada da função alterar embarque
+                    cout<<"Digite o codigo do roteiro relacionado ao embarque: " ;
+                    cin>>aux;
+                    if(verifica_codigo(aux, roteiros))
+                        cout<<"Nao existe um roteiro com esse codigo!"<<endl;
+                    else{
+                        alterar_Embarque(aux, embarques, passageiros);
+                    }
+                    limparBuffers();
+                    pause();
                     break;
                 case 4:
                     // chamada da função listar embarque
@@ -1313,6 +1323,44 @@ bool remover_Embarque(vector<Embarque> &embarques, string cpf, int codigo)
         }
     }
     return false;
+}
+
+void alterar_Embarque(int codigo, vector<Embarque> &embarques, vector<Passageiro> &passageiros){
+    for(Embarque embarque : embarques){
+        if(embarque.codigo_roteiro == codigo){
+            Passageiro passageiro = get_passageiro_por_cpf(embarque.cpf_passageiro, passageiros);
+            imprimir_passageiro(passageiro);
+        }
+    }
+
+    cout<<"Digite o cpf do passageiro relacionado ao embarque: ";
+    string cpf;
+    cin>>cpf;
+    if(validarCPF(cpf)){
+        for(Embarque &embarque : embarques){
+            if(embarque.cpf_passageiro == cpf && embarque.codigo_roteiro == codigo){
+                int duracao;
+                cout<<"Digite a duracao real do embarque: ";
+                cin>>duracao;
+                embarque.duracao = duracao;
+                cout<<"Embarque alterado com sucesso!";
+                return;
+            }
+        }
+
+        cout<<"Um passageiro com esse cpf nao existe ou na esta relacionado a esse embarque."<<endl;
+    } else{
+        cout<<"CPF invalido"<<endl;
+    }
+}
+
+Passageiro get_passageiro_por_cpf(string cpf, vector<Passageiro> passageiros){
+    for(Passageiro passageiro : passageiros){
+        if(passageiro.cpf == cpf){
+            return passageiro;
+        }
+    }
+    return Passageiro();
 }
 
 void listar_Embarques(vector<Embarque> &embarques){
