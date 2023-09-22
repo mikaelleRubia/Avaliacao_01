@@ -364,30 +364,21 @@ int main()
                     }
                     else
                     {
-                        if (aux != -1 && aux2 != -1)
+                        if (embarques.empty())
                         {
-                            if (embarques.empty())
-                            {
-                                gerar_Embarque(embarques, passageiros, roteiros);
-                                cout << "\nEmbarque cadastrado com sucesso!" << endl;
-                            }
-                            else if (!verifica_Embarque(embarques, passageiros[aux].cpf, roteiros[aux2].codigo))
-                            {
-                                cout << "\nEmbarque ja existe!" << endl;
-                                cout << "caso queira alterar alguma informacao do embarque selecione a opcao de alterar no menu !!" << endl;
-                            }
-                            else
-                            {
-                                gerar_Embarque(embarques, passageiros, roteiros);
-                                cout << "\nEmbarque cadastrado com sucesso!" << endl;
-                            }
+                            gerar_Embarque(embarques, passageiros, roteiros);
+                            cout << "\nEmbarque cadastrado com sucesso!" << endl;
+                        }
+                        else if (!verifica_Embarque(embarques, passageiros[aux].cpf, roteiros[aux2].codigo))
+                        {
+                            cout << "\nEmbarque ja existe!" << endl;
+                            cout << "caso queira alterar alguma informacao do embarque selecione a opcao de alterar no menu !!" << endl;
                         }
                         else
                         {
-                            cout << "\nEmbarque nao localizado !" << endl;
-                            cout << "Codigo e cpf inexistente ou digitados Errados !" << endl;
+                            gerar_Embarque(embarques, passageiros, roteiros);
+                            cout << "\nEmbarque cadastrado com sucesso!" << endl;
                         }
-
                         limparBuffers();
                         pause();
                     }
@@ -1407,6 +1398,15 @@ void gerar_Embarque(vector<Embarque> &embarques, vector<Passageiro> passageiros,
     int opcao, aux, aux2;
     aux = localizar_passageiro(passageiros);
     aux2 = localizar_Roteiro(roteiros);
+
+    if(aux == -1 || aux2 == -1)
+    {
+        cout << "Passageiro ou Roteiro nao encontrado !!\n";
+        cout << "Serar redirecionado para o menu Passageiros !!\n";
+        limparBuffers();
+        pause();
+        return;
+    }
     if (verifica_Embarque(embarques, passageiros[aux].cpf, roteiros[aux2].codigo))
     {
         cout << "==========Dados do Roteiro==========\n";
