@@ -84,7 +84,8 @@ void listar_Roteiro(vector<Roteiro> &);
 int localizar_Roteiro(vector<Roteiro> &);
 void alterar_Roteiro(vector<Roteiro> &);
 // Funções do sistema de Embarque
-void gerar_Embarque(vector<Embarque> &, string, int);
+bool verifica_Embarque(vector<Embarque> embarques, string cpf, int codigo);
+void gerar_Embarque(vector<Embarque> &, vector<Passageiro>, vector<Roteiro>);
 bool remover_Embarque(vector<Embarque> &embarques, string cpf, int codigo);
 void imprimir_Embarque(Embarque);
 void listar_Embarques(vector<Embarque> &);
@@ -363,12 +364,23 @@ int main()
                     }
                     else
                     {
-                        aux = localizar_passageiro(passageiros);
-                        aux2 = localizar_Roteiro(roteiros);
                         if (aux != -1 && aux2 != -1)
                         {
-                            gerar_Embarque(embarques, passageiros[aux].cpf, roteiros[aux2].codigo);
-                            cout << "\nEmbarque cadastrado com sucesso!" << endl;
+                            if (embarques.empty())
+                            {
+                                gerar_Embarque(embarques, passageiros, roteiros);
+                                cout << "\nEmbarque cadastrado com sucesso!" << endl;
+                            }
+                            else if (!verifica_Embarque(embarques, passageiros[aux].cpf, roteiros[aux2].codigo))
+                            {
+                                cout << "\nEmbarque ja existe!" << endl;
+                                cout << "caso queira alterar alguma informacao do embarque selecione a opcao de alterar no menu !!" << endl;
+                            }
+                            else
+                            {
+                                gerar_Embarque(embarques, passageiros, roteiros);
+                                cout << "\nEmbarque cadastrado com sucesso!" << endl;
+                            }
                         }
                         else
                         {
@@ -446,6 +458,8 @@ int main()
             {
                 cout << "Nao ha embarques cadastrados!" << endl;
                 cout << "Por favor cadastre um Embarque antes !\n";
+                limparBuffers();
+                pause();
             }
             else
             {
@@ -524,13 +538,18 @@ int main()
                         pause();
                         break;
                     case 6:
-                        if(roteiros.empty()){
+                        if (roteiros.empty())
+                        {
                             cout << "Nao ha roteiros cadastrados!" << endl;
-                        } else if(embarques.empty()){
+                        }
+                        else if (embarques.empty())
+                        {
                             cout << "Nao ha embarques cadastrados!" << endl;
-                        } else {
-                            cout<<"Digite o codigo do roteiro: ";
-                            cin>>aux;
+                        }
+                        else
+                        {
+                            cout << "Digite o codigo do roteiro: ";
+                            cin >> aux;
                             registrar_ocorrencia_por_roteiro(aux, roteiros, embarques);
                         }
                         limparBuffers();
@@ -1202,7 +1221,7 @@ Roteiro gerar_Roteiro(vector<Roteiro> &roteiros)
     r.data = gera_data(false);
     do
     {
-        cout << "Digite a hora do roteiro: ";
+        cout << "Digite a hora do roteiro (00:00): ";
         cin >> r.Hora;
         if (!valida_horario(r.Hora))
         {
@@ -1370,6 +1389,7 @@ void alterar_Roteiro(vector<Roteiro> &roteiros)
 }
 
 // Funções Gestão de Embarque
+// verifica_Embarque retorna false se o embarque foi encontrado
 bool verifica_Embarque(vector<Embarque> embarques, string cpf, int codigo)
 {
     for (Embarque e : embarques)
@@ -1381,18 +1401,33 @@ bool verifica_Embarque(vector<Embarque> embarques, string cpf, int codigo)
     }
     return true;
 }
-void gerar_Embarque(vector<Embarque> &embarques, string cpf, int codigo)
+void gerar_Embarque(vector<Embarque> &embarques, vector<Passageiro> passageiros, vector<Roteiro> roteiros)
 {
     Embarque e;
-    int opcao;
-    if (verifica_Embarque(embarques, cpf, codigo))
+    int opcao, aux, aux2;
+    aux = localizar_passageiro(passageiros);
+    aux2 = localizar_Roteiro(roteiros);
+    if (verifica_Embarque(embarques, passageiros[aux].cpf, roteiros[aux2].codigo))
     {
         cout << "==========Dados do Roteiro==========\n";
-        e.cpf_passageiro = cpf;
-        e.codigo_roteiro = codigo;
-        e.data = gera_data(false).data;
-        cout << "Digite a hora do embarque: ";
-        cin >> e.hora;
+        imprimir_Roteiro(roteiros[aux2]);
+        cout << "======================================\n";
+
+        e.cpf_passageiro = passageiros[aux].cpf;
+        e.codigo_roteiro = roteiros[aux2].codigo;
+        e.data = roteiros[aux2].data.data;
+        do
+        {
+            cout << "Digite a hora do roteiro (00:00): ";
+            cin >> e.hora;
+            if (!valida_horario(e.hora))
+            {
+                cout << "Horario invalido, tente novamente." << endl;
+                limparBuffers();
+                pause();
+            }
+        } while (!valida_horario(e.hora));
+
         cout << "Digite a duracao do embarque: ";
         cin >> e.duracao;
         cout << "Informe se o embarque foi realizado: \n";
@@ -1633,9 +1668,12 @@ void gerar_ocorrencia(vector<Embarque> &embarques, Ocorrencia &ocorrencia)
             {
                 if (e.cpf_passageiro == cpf && e.codigo_roteiro == codigo)
                 {
-                    if(e.realizada == false){
-                        cout<<"Esse embarque nao foi realizado"<<endl;
-                    } else {
+                    if (e.realizada == false)
+                    {
+                        cout << "Esse embarque nao foi realizado" << endl;
+                    }
+                    else
+                    {
                         e.ocorrencia = ocorrencia;
                         std::cout << "Ocorrência cadastrada com sucesso!" << std::endl;
                     }
@@ -1684,7 +1722,6 @@ bool remover_ocorrencia(vector<Embarque> &embarques)
     };
     return false;
 }
-
 
 void listar_ocorrenciaPorCPF(vector<Embarque> &embarques)
 {
@@ -1803,26 +1840,14 @@ void listar_ocorrenciaPorRoteiro(vector<Embarque> &embarques)
     cout << "=============================================\n\n";
 }
 
-// ###########################################################################
-
-// CPFs Válidos para teste
-/*
-    56920258099
-    16429869091
-    62628795019
-    78192873064
-    7608843705
-    71020146001
-    38754362024
-    12300887096
-    16188894000
-    46429599043
-*/
-
-void registrar_ocorrencia_por_roteiro(int codigo, vector<Roteiro> &roteiros, vector<Embarque> &embarques){
-    if(verifica_codigo(codigo, roteiros)){
-        cout<<"Nao existe um roteiro com esse codigo!"<<endl;
-    } else {
+void registrar_ocorrencia_por_roteiro(int codigo, vector<Roteiro> &roteiros, vector<Embarque> &embarques)
+{
+    if (verifica_codigo(codigo, roteiros))
+    {
+        cout << "Nao existe um roteiro com esse codigo!" << endl;
+    }
+    else
+    {
         Ocorrencia ocorrencia;
 
         cout << "Digite a descrição da ocorrência: ";
@@ -1865,12 +1890,30 @@ void registrar_ocorrencia_por_roteiro(int codigo, vector<Roteiro> &roteiros, vec
             }
         } while (!valida_horario(ocorrencia.hora));
 
-        for(Embarque &embarque : embarques){
-            if(embarque.codigo_roteiro == codigo && embarque.realizada == true){
+        for (Embarque &embarque : embarques)
+        {
+            if (embarque.codigo_roteiro == codigo && embarque.realizada == true)
+            {
                 embarque.ocorrencia = ocorrencia;
             }
         }
 
-        cout<<"Ocorrencia registrada nos embarques realizados para o roteiro com o codigo "<<codigo<<endl;
+        cout << "Ocorrencia registrada nos embarques realizados para o roteiro com o codigo " << codigo << endl;
     }
 }
+
+// ###########################################################################
+
+// CPFs Válidos para teste
+/*
+    56920258099
+    16429869091
+    62628795019
+    78192873064
+    7608843705
+    71020146001
+    38754362024
+    12300887096
+    16188894000
+    46429599043
+*/
