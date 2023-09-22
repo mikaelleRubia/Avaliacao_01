@@ -382,6 +382,13 @@ int main()
                     break;
                 case 4:
                     // chamada da função listar embarque
+                    if(embarques.empty()){
+                        cout<<"Nao ha embarques cadastrados!"<<endl;
+                    } else {
+                        listar_Embarques(embarques);
+                    }
+                    limparBuffers();
+                    pause();
                     break;
                 case 5:
                     // chamada do Menu de Ocorrencia
@@ -1250,11 +1257,15 @@ void imprimir_Embarque(Embarque e)
     cout << "data: " << e.data << endl;
     cout << "hora: " << e.hora << endl;
     cout << "duracao: " << e.duracao << endl;
-    cout << "realizada: " << e.realizada << endl;
+    cout << "realizada: ";
+    if(e.realizada == 1) cout<<"Sim"<<endl;
+    else cout<<"Nao"<<endl;
+    // << e.realizada << endl;
 }
 bool remover_Embarque(vector<Embarque> &embarques, string cpf, int codigo)
 {
     int tamanho = embarques.size();
+    int opcao;
     for (int i = 0; i < tamanho; i++)
     {
         if (embarques[i].cpf_passageiro == cpf && embarques[i].codigo_roteiro == codigo)
@@ -1263,14 +1274,35 @@ bool remover_Embarque(vector<Embarque> &embarques, string cpf, int codigo)
             cout << "Dados do embarque removidos: !\n";
             cout << "======================================\n";
             imprimir_Embarque(embarques[i]);
-            cout << "======================================\n";
-            embarques.erase(embarques.begin() + i);
-            return true;
+            cout << "======================================\n\n";
+            cout << "Deseja realmente remover o embarque?\n";
+            cout << "1 - Sim\n";
+            cout << "2 - Nao\n";
+            cout << "OBS: Digite 1 ou 2, caso contrario sera considerado como Nao!\n";
+            cin >> opcao;
+
+            if(opcao == 1){
+                embarques.erase(embarques.begin() + i);
+                return true;
+            }
         }
     }
     return false;
 }
 
+void listar_Embarques(vector<Embarque> &embarques){
+    int i = 1;
+    cout << "==========Dados dos Embarques==========\n\n";
+    for (Embarque embarque : embarques)
+    {
+        cout << "Roteiro: " << i << "ª\n\n";
+        cout << "======================================\n";
+
+        imprimir_Embarque(embarque);
+
+        cout << "======================================\n\n";
+    }
+}
 // ###########################################################################
 
 // CPFs Válidos para teste
