@@ -1418,11 +1418,11 @@ void gerar_Embarque(vector<Embarque> &embarques, vector<Passageiro> passageiros,
         e.data = roteiros[aux2].data.data;
         do
         {
-            cout << "Digite a hora do roteiro (00:00): ";
+            cout << "Digite a hora do embarque (00:00): ";
             cin >> e.hora;
             if (!valida_horario(e.hora))
             {
-                cout << "Horario invalido, tente novamente." << endl;
+                cout << "\nHorario invalido, tente novamente." << endl;
                 limparBuffers();
                 pause();
             }
