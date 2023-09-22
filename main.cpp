@@ -134,11 +134,12 @@ int main()
     int opcao, opcao2, aux, aux2;
     Passageiro aux_passageiro;
     Roteiro aux_roteiro;
+    Ocorrencia aux_ocorrencia;
     // vetores
     vector<Embarque> embarques;
     vector<Roteiro> roteiros;
     vector<Passageiro> passageiros;
-    Ocorrencia ocorrencias;
+    
 
     do
     {
@@ -438,7 +439,7 @@ int main()
                             }
                             else
                             {
-                                gerar_ocorrencia(embarques, ocorrencias);
+                                gerar_ocorrencia(embarques, aux_ocorrencia);
 
                                 limparBuffers();
                                 pause();
@@ -509,6 +510,54 @@ int main()
                 }
 
             } while (opcao2 != 0);
+            break;
+        case 4:
+            if(embarques.empty()){
+                cout << "Nao ha embarques cadastrados!" << endl;
+                cout << "Por favor cadastre um Embarque antes !\n";
+            } else {
+                do{
+                    limpaTela();
+                    opcao2 = Menu_Ocorrencia();
+
+                    switch (opcao2)
+                    {
+                    case 1:
+                        // chamada da função inserir Ocorrencia
+                        gerar_ocorrencia(embarques, aux_ocorrencia);
+                        limparBuffers();
+                        pause();
+                        break;
+                    case 2:
+                        
+                        if (remover_Roteiro(roteiros))
+                        {
+                            cout << "Roteiro removido com sucesso !" << endl;
+                        }
+                        else
+                        {
+                            cout << "Erro ou Desistencia, ao/da remover/remocao o/do Ocorrencia !" << endl;
+                            cout << "Codigo e cpf inexistente ou digitado Errado !" << endl;
+                        }
+                        
+                        limparBuffers();
+                        pause();
+                        break;
+                    case 3:
+                        break;
+                    case 4:
+                        break;
+                    case 5:
+                        break;
+                    case 0:
+                        break;
+                    default:
+                        break;
+                    }
+                } while (opcao2 != 0);
+            }
+            limparBuffers();
+            pause();
             break;
         case 0:
             // chamada da função
@@ -804,7 +853,6 @@ int Menu_Embarque()
     cout << "2 - Excluir\n";
     cout << "3 - Alterar\n";
     cout << "4 - Listar\n";
-    cout << "5 - Gerencia Ocorrencias\n";
     cout << "0 - Voltar ao Menu Principal\n";
 
     int opcao;
@@ -1514,63 +1562,62 @@ void gerar_ocorrencia(vector<Embarque> &embarques,  Ocorrencia& ocorrencia)
         cin >> cpf;
 
         if (verifica_Embarque(embarques, cpf, codigo)) {
-                verifica_embarques = false;
-                cout << "Não encontramos essa embarque!" << endl;
-                limparBuffers();
-                pause();
-    // Saia da função se a ocorrência não foi encontrada.
-            }else{
-                verifica_embarques = true;
+            verifica_embarques = false;
+            cout << "Não encontramos essa embarque!" << endl;
+            limparBuffers();
+            pause();
+        // Saia da função se a ocorrência não foi encontrada.
+        }else{
+            verifica_embarques = true;
 
-                cout << "========== Dados do Roteiro ==========\n";
-                cout << "Digite a descrição da ocorrência: ";
-                cin.ignore(); // Limpe o buffer do teclado antes de ler a descrição.
-                getline(cin, ocorrencia.Descricao); 
+            cout << "========== Dados do Roteiro ==========\n";
+            cout << "Digite a descrição da ocorrência: ";
+            cin.ignore(); // Limpe o buffer do teclado antes de ler a descrição.
+            getline(cin, ocorrencia.Descricao); 
 
-                do{
-                    cout << "Digite o numero da apólice: ";
-                    cin >> ocorrencia.numero_Apolice;
-                    if (verifica_apolice_cadastro(embarques, ocorrencia.numero_Apolice))
-                    {
-                        cout << "Apolice já cadastrada, tente outra." << endl;
-                        limparBuffers();
-                        pause();
-                    }
-                } while (verifica_apolice_cadastro(embarques, ocorrencia.numero_Apolice));
-
-                do{
-                    cout << "Digite a Data da ocorrência (formato: DD/MM/AAAA): ";
-                    cin >> ocorrencia.data;
-                    if(!valida_data(ocorrencia.data)){
-                        cout << "Nascimento do passageiro invalida tente novamente." <<endl;
-                        limparBuffers();
-                        pause();
-                    }
-                } while (!valida_data(ocorrencia.data));
-
-                do{
-                    cout << "Digite a hora da ocorrência(00:00): ";
-                    cin >> ocorrencia.hora;
-                    if (!valida_horario(ocorrencia.hora))
-                    {
-                        cout << "Horario invalido, tente novamente." << endl;
-                        limparBuffers();
-                        pause();
-                    }
-                } while (!valida_horario(ocorrencia.hora));
-
-                for (Embarque& e : embarques) {
-                    if (e.cpf_passageiro == cpf && e.codigo_roteiro == codigo) {
-                        e.ocorrencia = ocorrencia;
-                        std::cout << "Ocorrência cadastrada com sucesso!" << std::endl;
-                    }
+            do{
+                cout << "Digite o numero da apólice: ";
+                cin >> ocorrencia.numero_Apolice;
+                if (verifica_apolice_cadastro(embarques, ocorrencia.numero_Apolice))
+                {
+                    cout << "Apolice já cadastrada, tente outra." << endl;
+                    limparBuffers();
+                    pause();
                 }
-                cout << "======================================\n\n";
-                cout << "Ocorrencia cadastrado com sucesso!" << endl;
+            } while (verifica_apolice_cadastro(embarques, ocorrencia.numero_Apolice));
 
-            };
+            do{
+                cout << "Digite a Data da ocorrência (formato: DD/MM/AAAA): ";
+                cin >> ocorrencia.data;
+                if(!valida_data(ocorrencia.data)){
+                    cout << "Nascimento do passageiro invalida tente novamente." <<endl;
+                    limparBuffers();
+                    pause();
+                }
+            } while (!valida_data(ocorrencia.data));
+
+            do{
+                cout << "Digite a hora da ocorrência(00:00): ";
+                cin >> ocorrencia.hora;
+                if (!valida_horario(ocorrencia.hora))
+                {
+                    cout << "Horario invalido, tente novamente." << endl;
+                    limparBuffers();
+                    pause();
+                }
+            } while (!valida_horario(ocorrencia.hora));
+
+            for (Embarque& e : embarques) {
+                if (e.cpf_passageiro == cpf && e.codigo_roteiro == codigo) {
+                    e.ocorrencia = ocorrencia;
+                    std::cout << "Ocorrência cadastrada com sucesso!" << std::endl;
+                }
+            }
+            cout << "======================================\n\n";
+            cout << "Ocorrencia cadastrado com sucesso!" << endl;
+
+        };
     }while(verifica_embarques != true);
-
 };
 
 
