@@ -339,7 +339,7 @@ int main()
                     // chamada da função inserir embarque
                     if (passageiros.empty() && roteiros.empty())
                     {
-                        cout << "Nao ha passageiros ou roteiros cadastrados !" << endl;
+                        cout << "\nNao ha passageiros ou roteiros cadastrados !" << endl;
                         limparBuffers();
                         pause();
                     }
@@ -347,8 +347,14 @@ int main()
                     {
                         aux = localizar_passageiro(passageiros);
                         aux2 = localizar_Roteiro(roteiros);
-                        gerar_Embarque(embarques, passageiros[aux].cpf, roteiros[aux2].codigo);
-                        cout << "Embarque cadastrado com sucesso!" << endl;
+                        if(aux != -1 && aux2 != -1){
+                            gerar_Embarque(embarques, passageiros[aux].cpf, roteiros[aux2].codigo);
+                            cout << "\nEmbarque cadastrado com sucesso!" << endl;
+                        }else{
+                            cout << "\nEmbarque nao localizado !" << endl;
+                            cout << "Codigo e cpf inexistente ou digitados Errados !" << endl;
+                        }
+                        
                         limparBuffers();
                         pause();
                     }
@@ -357,7 +363,7 @@ int main()
                     // chamada da função remover embarque
                     if (embarques.empty())
                     {
-                        cout << "Nao ha embarques cadastrados!" << endl;
+                        cout << "\nNao ha embarques cadastrados!" << endl;
                     }
                     else
                     {
@@ -366,11 +372,11 @@ int main()
 
                         if (remover_Embarque(embarques, passageiros[aux].cpf, roteiros[aux2].codigo))
                         {
-                            cout << "Embarque removido com sucesso!" << endl;
+                            cout << "\nEmbarque removido com sucesso!" << endl;
                         }
                         else
                         {
-                            cout << "Erro ou Desistencia, ao/da remover/remocao o/do embarque!" << endl;
+                            cout << "\nErro ou Desistencia, ao/da remover/remocao o/do embarque!" << endl;
                             cout << "Codigo e cpf inexistente ou digitados Errados!" << endl;
                         }
                     }
@@ -383,7 +389,7 @@ int main()
                 case 4:
                     // chamada da função listar embarque
                     if(embarques.empty()){
-                        cout<<"Nao ha embarques cadastrados!"<<endl;
+                        cout<<"\nNao ha embarques cadastrados!"<<endl;
                     } else {
                         listar_Embarques(embarques);
                     }
