@@ -4,6 +4,7 @@
 #include <limits>
 #include <ctime>
 #include <regex>
+#include <ctype.h>
 
 using namespace std;
 
@@ -1417,11 +1418,23 @@ void alterar_Embarque(int codigo, vector<Embarque> &embarques, vector<Passageiro
     if(validarCPF(cpf)){
         for(Embarque &embarque : embarques){
             if(embarque.cpf_passageiro == cpf && embarque.codigo_roteiro == codigo){
-                int duracao;
+                string duracaoString;
                 cout<<"Digite a duracao real do embarque: ";
-                cin>>duracao;
-                embarque.duracao = duracao;
-                cout<<"Embarque alterado com sucesso!";
+                cin>>duracaoString;
+                bool eNumero = true;
+                // string duracaoString = to_string(duracao);
+                for(char caractere : duracaoString){
+                    if(!isdigit(caractere)){
+                        cout<<"Digite um valor numerico para a duracao do embarque!"<<endl;
+                        eNumero = false;
+                        break;
+                    }
+                }
+                if(eNumero){
+                    int duracao = stoi(duracaoString);
+                    embarque.duracao = duracao;
+                    cout<<"Embarque alterado com sucesso!";
+                }
                 return;
             }
         }
