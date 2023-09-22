@@ -162,7 +162,7 @@ int main()
                         }
                         else
                         {
-                            cout << "Erro ao remover passageiro !" << endl;
+                            cout << "Erro ou Desistencia, ao/da remover/remocao o/do passageiro !" << endl;
                             cout << "CPF inexistente ou CPF digitado Errado !" << endl;
                         }
                     }
@@ -260,7 +260,7 @@ int main()
                         }
                         else
                         {
-                            cout << "Erro ao remover o roteiro !" << endl;
+                            cout << "Erro ou Desistencia, ao/da remover/remocao o/do roteiro !" << endl;
                             cout << "Codigo inexistente ou digitado Errado !" << endl;
                         }
                     }
@@ -370,7 +370,7 @@ int main()
                         }
                         else
                         {
-                            cout << "Erro ao remover embarque!" << endl;
+                            cout << "Erro ou Desistencia, ao/da remover/remocao o/do embarque!" << endl;
                             cout << "Codigo e cpf inexistente ou digitados Errados!" << endl;
                         }
                     }
@@ -633,6 +633,7 @@ int Menu()
     cout << "1 - Gestao de Passageiros \n";
     cout << "2 - Gestao de Roteiros \n";
     cout << "3 - Gestao de Embarquecoes \n";
+    cout << "4 - Gestao de Ocorrencias \n";
     cout << "0 - Sair\n";
 
     int opcao;
@@ -856,14 +857,26 @@ int localizar_passageiro(vector<Passageiro> &passageiros)
 bool remover_passageiro(vector<Passageiro> &passageiros)
 {
     string cpf;
-    int i;
+    int i,opcao;
 
     i = localizar_passageiro(passageiros);
 
     if (i != -1)
     {
-        passageiros.erase(passageiros.begin() + i);
-        return true;
+        cout << "Dados do Passageiro a remover: !\n";
+            cout << "======================================\n";
+            imprimir_passageiro(passageiros[i]);
+            cout << "======================================\n\n";
+            cout << "Deseja realmente remover o passageiro?\n";
+            cout << "1 - Sim\n";
+            cout << "2 - Nao\n";
+            cout << "OBS: Digite 1 ou 2, caso contrario sera considerado como Nao!\n";
+            cin >> opcao;
+
+            if(opcao == 1){
+                passageiros.erase(passageiros.begin() + i);
+                return true;
+            }
     }
 
     return false;
@@ -1076,7 +1089,7 @@ Roteiro gerar_Roteiro(vector<Roteiro> &roteiros)
 }
 bool remover_Roteiro(vector<Roteiro> &roteiros)
 {
-    int codigo;
+    int codigo, opcao;
     int tamanho = roteiros.size();
     cout << "Digite o codigo do roteiro que deseja remover: ";
     cin >> codigo;
@@ -1084,8 +1097,20 @@ bool remover_Roteiro(vector<Roteiro> &roteiros)
     {
         if (roteiros[i].codigo == codigo)
         {
-            roteiros.erase(roteiros.begin() + i);
-            return true;
+            cout << "Dados do Roteiro a remover: !\n";
+            cout << "======================================\n";
+            imprimir_Roteiro(roteiros[i]);
+            cout << "======================================\n\n";
+            cout << "Deseja realmente remover o roteiro?\n";
+            cout << "1 - Sim\n";
+            cout << "2 - Nao\n";
+            cout << "OBS: Digite 1 ou 2, caso contrario sera considerado como Nao!\n";
+            cin >> opcao;
+
+            if(opcao == 1){
+                roteiros.erase(roteiros.begin() + i);
+                return true;
+            }
         }
     }
     return false;
@@ -1271,7 +1296,7 @@ bool remover_Embarque(vector<Embarque> &embarques, string cpf, int codigo)
         if (embarques[i].cpf_passageiro == cpf && embarques[i].codigo_roteiro == codigo)
         {
 
-            cout << "Dados do embarque removidos: !\n";
+            cout << "Dados do embarque a remover: !\n";
             cout << "======================================\n";
             imprimir_Embarque(embarques[i]);
             cout << "======================================\n\n";
@@ -1295,7 +1320,7 @@ void listar_Embarques(vector<Embarque> &embarques){
     cout << "==========Dados dos Embarques==========\n\n";
     for (Embarque embarque : embarques)
     {
-        cout << "Roteiro: " << i << "ª\n\n";
+        cout << "Embarque: " << i << "ª\n\n";
         cout << "======================================\n";
 
         imprimir_Embarque(embarque);
