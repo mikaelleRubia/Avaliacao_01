@@ -90,15 +90,14 @@ void imprimir_Embarque(Embarque);
 void listar_Embarques(vector<Embarque> &);
 int localizar_Embarque(vector<Embarque> &);
 void alterar_Embarque(int, vector<Embarque> &, vector<Passageiro> &);
-Passageiro get_passageiro_por_cpf(string, vector<Passageiro> );
+Passageiro get_passageiro_por_cpf(string, vector<Passageiro>);
 
-//Funções de Ocorrencia
-void gerar_ocorrencia(vector<Embarque> &embarques,  Ocorrencia& ocorrencia);
-bool remover_ocorrencia( vector<Embarque> &embarques);
+// Funções de Ocorrencia
+void gerar_ocorrencia(vector<Embarque> &embarques, Ocorrencia &ocorrencia);
+bool remover_ocorrencia(vector<Embarque> &embarques);
 void listar_ocorrenciaPorRoteiro(vector<Embarque> &embarques);
 void listar_ocorrenciaPorCPF(vector<Embarque> &embarques);
-void alterar_OcorrenciaPorCPF(vector<Embarque> &embarques) ;
-
+void alterar_OcorrenciaPorCPF(vector<Embarque> &embarques);
 
 // Funções de validação
 bool verifica_CPF(string cpf, vector<Passageiro> &passageiros);
@@ -106,9 +105,8 @@ bool validarCPF(string cpf);
 bool verifica_codigo(int codigo, vector<Roteiro> roteiros);
 bool validarData(Data, bool);
 Data gera_data(bool);
-bool valida_data(string& data);
-bool verifica_apolice_cadastro(vector<Embarque> &embarques, string& apolice);
-
+bool valida_data(string &data);
+bool verifica_apolice_cadastro(vector<Embarque> &embarques, string &apolice);
 
 // Funções de utilidades
 void limpaTela_pause();
@@ -139,7 +137,6 @@ int main()
     vector<Embarque> embarques;
     vector<Roteiro> roteiros;
     vector<Passageiro> passageiros;
-    
 
     do
     {
@@ -227,7 +224,9 @@ int main()
                             cout << "\n=======================================" << endl;
                             imprimir_passageiro(passageiros[aux]);
                             cout << "\n=======================================" << endl;
-                        }else{
+                        }
+                        else
+                        {
                             cout << "\nPassageiro nao localizado !" << endl;
                         }
                     }
@@ -287,13 +286,13 @@ int main()
                     if (roteiros.empty())
                     {
                         cout << "Nao ha roteiros cadastrados !" << endl;
-                        limparBuffers();
-                        pause();
                     }
                     else
                     {
                         alterar_Roteiro(roteiros);
                     }
+                    limparBuffers();
+                    pause();
                     break;
                 case 4:
                     // chamada da função listar passageiros
@@ -318,14 +317,17 @@ int main()
                     {
 
                         aux = localizar_Roteiro(roteiros);
-                        if(aux != -1){
-                        cout << "Roteiro localizado segue os dados: " << endl;
-                        cout << "=======================================" << endl;
+                        if (aux != -1)
+                        {
+                            cout << "Roteiro localizado segue os dados: " << endl;
+                            cout << "=======================================" << endl;
 
-                        imprimir_Roteiro(roteiros[aux]);
+                            imprimir_Roteiro(roteiros[aux]);
 
-                        cout << "=======================================" << endl;
-                        }else{
+                            cout << "=======================================" << endl;
+                        }
+                        else
+                        {
                             cout << "Roteiro nao localizado !" << endl;
                         }
                     }
@@ -362,14 +364,17 @@ int main()
                     {
                         aux = localizar_passageiro(passageiros);
                         aux2 = localizar_Roteiro(roteiros);
-                        if(aux != -1 && aux2 != -1){
+                        if (aux != -1 && aux2 != -1)
+                        {
                             gerar_Embarque(embarques, passageiros[aux].cpf, roteiros[aux2].codigo);
                             cout << "\nEmbarque cadastrado com sucesso!" << endl;
-                        }else{
+                        }
+                        else
+                        {
                             cout << "\nEmbarque nao localizado !" << endl;
                             cout << "Codigo e cpf inexistente ou digitados Errados !" << endl;
                         }
-                        
+
                         limparBuffers();
                         pause();
                     }
@@ -400,11 +405,12 @@ int main()
                     break;
                 case 3:
                     // chamada da função alterar embarque
-                    cout<<"Digite o codigo do roteiro relacionado ao embarque: " ;
-                    cin>>aux;
-                    if(verifica_codigo(aux, roteiros))
-                        cout<<"Nao existe um roteiro com esse codigo!"<<endl;
-                    else{
+                    cout << "Digite o codigo do roteiro relacionado ao embarque: ";
+                    cin >> aux;
+                    if (verifica_codigo(aux, roteiros))
+                        cout << "Nao existe um roteiro com esse codigo!" << endl;
+                    else
+                    {
                         alterar_Embarque(aux, embarques, passageiros);
                     }
                     limparBuffers();
@@ -412,94 +418,16 @@ int main()
                     break;
                 case 4:
                     // chamada da função listar embarque
-                    if(embarques.empty()){
-                        cout<<"\nNao ha embarques cadastrados!"<<endl;
-                    } else {
+                    if (embarques.empty())
+                    {
+                        cout << "\nNao ha embarques cadastrados!" << endl;
+                    }
+                    else
+                    {
                         listar_Embarques(embarques);
                     }
                     limparBuffers();
                     pause();
-                    break;
-                case 5:
-                    // chamada do Menu de Ocorrencia
-                    do
-                    {
-                        limpaTela();
-                        opcao2 = Menu_Ocorrencia();
-
-                        switch (opcao2)
-                        {
-                        case 1:
-                            // chamada da função inserir embarque
-                            if (passageiros.empty() && roteiros.empty())
-                            {
-                                cout << "Nao ha passageiros ou roteiros cadastrados !" << endl;
-                                limparBuffers();
-                                pause();
-                            }
-                            else
-                            {
-                                gerar_ocorrencia(embarques, aux_ocorrencia);
-
-                                limparBuffers();
-                                pause();
-                            }
-                            break;
-                        case 2:
-                            // chamada da função remover embarque
-                            if (embarques.empty())
-                            {
-                                cout << "Nao ha embarques cadastrados!" << endl;
-                            }
-                            else
-                            {
-
-                                if (remover_ocorrencia(embarques))
-                                {
-                                    cout << "Embarque removido com sucesso!" << endl;
-                                }
-                                else
-                                {
-                                    cout << "Erro ao remover Ocorrencia!" << endl;
-                                    cout << "Codigo e cpf inexistente ou digitados Errados!" << endl;
-                                }
-                            }
-                            limparBuffers();
-                            pause();
-                            break;
-                        case 3:
-                            // chamada da função alterar embarque
-                             alterar_OcorrenciaPorCPF(embarques);
-                            break;
-                        case 4:
-                            // chamada da função listar embarque
-                            if(embarques.empty()){
-                                cout<<"Nao ha embarques cadastrados!"<<endl;
-                            } else {
-                                listar_ocorrenciaPorCPF(embarques);
-                            }
-                            limparBuffers();
-                            pause();
-                            break;
-                        case 5:
-                             // chamada da função listar embarque
-                            if(embarques.empty()){
-                                cout<<"Nao ha embarques cadastrados!"<<endl;
-                            } else {
-                                listar_ocorrenciaPorRoteiro(embarques);
-                            }
-                            limparBuffers();
-                            pause();
-                            break;
-                        case 0:
-                            break;
-                        default:
-                            cout << "Opção invalida !" << endl;
-                            cout << "Por favor digite uma opcao valida !\n";
-                            break;
-                        }
-
-                    } while (opcao2 != 0);
                     break;
                 case 0:
                     break;
@@ -512,55 +440,102 @@ int main()
             } while (opcao2 != 0);
             break;
         case 4:
-            if(embarques.empty()){
+            limpaTela();
+            if (embarques.empty())
+            {
                 cout << "Nao ha embarques cadastrados!" << endl;
                 cout << "Por favor cadastre um Embarque antes !\n";
-            } else {
-                do{
+            }
+            else
+            {
+                do
+                {
                     limpaTela();
                     opcao2 = Menu_Ocorrencia();
 
                     switch (opcao2)
                     {
                     case 1:
-                        // chamada da função inserir Ocorrencia
-                        gerar_ocorrencia(embarques, aux_ocorrencia);
+                        // chamada da função gerar ocorrencia
+                        if (passageiros.empty() && roteiros.empty())
+                        {
+                            cout << "Nao ha passageiros ou roteiros cadastrados !" << endl;
+                        }
+                        else
+                        {
+                            gerar_ocorrencia(embarques, aux_ocorrencia);
+                        }
                         limparBuffers();
                         pause();
                         break;
                     case 2:
-                        
-                        if (remover_Roteiro(roteiros))
+                        // chamada da função remover embarque
+                        if (embarques.empty())
                         {
-                            cout << "Roteiro removido com sucesso !" << endl;
+                            cout << "Nao ha embarques cadastrados!" << endl;
                         }
                         else
                         {
-                            cout << "Erro ou Desistencia, ao/da remover/remocao o/do Ocorrencia !" << endl;
-                            cout << "Codigo e cpf inexistente ou digitado Errado !" << endl;
+
+                            if (remover_ocorrencia(embarques))
+                            {
+                                cout << "Ocorrencia removido com sucesso!" << endl;
+                            }
+                            else
+                            {
+                                cout << "Erro ao remover Ocorrencia!" << endl;
+                                cout << "Codigo e cpf inexistente ou digitados Errados!" << endl;
+                            }
                         }
-                        
                         limparBuffers();
                         pause();
                         break;
                     case 3:
+                        // chamada da função alterar embarque
+                        alterar_OcorrenciaPorCPF(embarques);
+                        limparBuffers();
+                        pause();
                         break;
                     case 4:
+                        // chamada da função listar embarque
+                        if (embarques.empty())
+                        {
+                            cout << "Nao ha embarques cadastrados!" << endl;
+                        }
+                        else
+                        {
+                            listar_ocorrenciaPorCPF(embarques);
+                        }
+                        limparBuffers();
+                        pause();
                         break;
                     case 5:
+                        // chamada da função listar ocorrencias
+                        if (embarques.empty())
+                        {
+                            cout << "Nao ha embarques cadastrados!" << endl;
+                        }
+                        else
+                        {
+                            listar_ocorrenciaPorRoteiro(embarques);
+                        }
+                        limparBuffers();
+                        pause();
                         break;
                     case 0:
                         break;
                     default:
+                        cout << "Opção invalida !" << endl;
+                        cout << "Por favor digite uma opcao valida !\n";
+                        limparBuffers();
+                        pause();
                         break;
                     }
                 } while (opcao2 != 0);
             }
-            limparBuffers();
-            pause();
             break;
         case 0:
-            // chamada da função
+            //  sair
             break;
         default:
             cout << "Opção invalida !" << endl;
@@ -1003,26 +978,27 @@ int localizar_passageiro(vector<Passageiro> &passageiros)
 bool remover_passageiro(vector<Passageiro> &passageiros)
 {
     string cpf;
-    int i,opcao;
+    int i, opcao;
 
     i = localizar_passageiro(passageiros);
 
     if (i != -1)
     {
         cout << "Dados do Passageiro a remover: !\n";
-            cout << "======================================\n";
-            imprimir_passageiro(passageiros[i]);
-            cout << "======================================\n\n";
-            cout << "Deseja realmente remover o passageiro?\n";
-            cout << "1 - Sim\n";
-            cout << "2 - Nao\n";
-            cout << "OBS: Digite 1 ou 2, caso contrario sera considerado como Nao!\n";
-            cin >> opcao;
+        cout << "======================================\n";
+        imprimir_passageiro(passageiros[i]);
+        cout << "======================================\n\n";
+        cout << "Deseja realmente remover o passageiro?\n";
+        cout << "1 - Sim\n";
+        cout << "2 - Nao\n";
+        cout << "OBS: Digite 1 ou 2, caso contrario sera considerado como Nao!\n";
+        cin >> opcao;
 
-            if(opcao == 1){
-                passageiros.erase(passageiros.begin() + i);
-                return true;
-            }
+        if (opcao == 1)
+        {
+            passageiros.erase(passageiros.begin() + i);
+            return true;
+        }
     }
 
     return false;
@@ -1253,7 +1229,8 @@ bool remover_Roteiro(vector<Roteiro> &roteiros)
             cout << "OBS: Digite 1 ou 2, caso contrario sera considerado como Nao!\n";
             cin >> opcao;
 
-            if(opcao == 1){
+            if (opcao == 1)
+            {
                 roteiros.erase(roteiros.begin() + i);
                 return true;
             }
@@ -1429,8 +1406,10 @@ void imprimir_Embarque(Embarque e)
     cout << "hora: " << e.hora << endl;
     cout << "duracao: " << e.duracao << endl;
     cout << "realizada: ";
-    if(e.realizada == 1) cout<<"Sim"<<endl;
-    else cout<<"Nao"<<endl;
+    if (e.realizada == 1)
+        cout << "Sim" << endl;
+    else
+        cout << "Nao" << endl;
     // << e.realizada << endl;
 }
 bool remover_Embarque(vector<Embarque> &embarques, string cpf, int codigo)
@@ -1452,7 +1431,8 @@ bool remover_Embarque(vector<Embarque> &embarques, string cpf, int codigo)
             cout << "OBS: Digite 1 ou 2, caso contrario sera considerado como Nao!\n";
             cin >> opcao;
 
-            if(opcao == 1){
+            if (opcao == 1)
+            {
                 embarques.erase(embarques.begin() + i);
                 return true;
             }
@@ -1461,57 +1441,72 @@ bool remover_Embarque(vector<Embarque> &embarques, string cpf, int codigo)
     return false;
 }
 
-void alterar_Embarque(int codigo, vector<Embarque> &embarques, vector<Passageiro> &passageiros){
-    for(Embarque embarque : embarques){
-        if(embarque.codigo_roteiro == codigo){
+void alterar_Embarque(int codigo, vector<Embarque> &embarques, vector<Passageiro> &passageiros)
+{
+    for (Embarque embarque : embarques)
+    {
+        if (embarque.codigo_roteiro == codigo)
+        {
             Passageiro passageiro = get_passageiro_por_cpf(embarque.cpf_passageiro, passageiros);
             imprimir_passageiro(passageiro);
         }
     }
 
-    cout<<"Digite o cpf do passageiro relacionado ao embarque: ";
+    cout << "Digite o cpf do passageiro relacionado ao embarque: ";
     string cpf;
-    cin>>cpf;
-    if(validarCPF(cpf)){
-        for(Embarque &embarque : embarques){
-            if(embarque.cpf_passageiro == cpf && embarque.codigo_roteiro == codigo){
+    cin >> cpf;
+    if (validarCPF(cpf))
+    {
+        for (Embarque &embarque : embarques)
+        {
+            if (embarque.cpf_passageiro == cpf && embarque.codigo_roteiro == codigo)
+            {
                 string duracaoString;
-                cout<<"Digite a duracao real do embarque: ";
-                cin>>duracaoString;
+                cout << "Digite a duracao real do embarque: ";
+                cin >> duracaoString;
                 bool eNumero = true;
                 // string duracaoString = to_string(duracao);
-                for(char caractere : duracaoString){
-                    if(!isdigit(caractere)){
-                        cout<<"Digite um valor numerico para a duracao do embarque!"<<endl;
+                for (char caractere : duracaoString)
+                {
+                    if (!isdigit(caractere))
+                    {
+                        cout << "Digite um valor numerico para a duracao do embarque!" << endl;
                         eNumero = false;
                         break;
                     }
                 }
-                if(eNumero){
+                if (eNumero)
+                {
                     int duracao = stoi(duracaoString);
                     embarque.duracao = duracao;
-                    cout<<"Embarque alterado com sucesso!";
+                    cout << "Embarque alterado com sucesso!";
                 }
                 return;
             }
         }
 
-        cout<<"Um passageiro com esse cpf nao existe ou na esta relacionado a esse embarque."<<endl;
-    } else{
-        cout<<"CPF invalido"<<endl;
+        cout << "Um passageiro com esse cpf nao existe ou na esta relacionado a esse embarque." << endl;
+    }
+    else
+    {
+        cout << "CPF invalido" << endl;
     }
 }
 
-Passageiro get_passageiro_por_cpf(string cpf, vector<Passageiro> passageiros){
-    for(Passageiro passageiro : passageiros){
-        if(passageiro.cpf == cpf){
+Passageiro get_passageiro_por_cpf(string cpf, vector<Passageiro> passageiros)
+{
+    for (Passageiro passageiro : passageiros)
+    {
+        if (passageiro.cpf == cpf)
+        {
             return passageiro;
         }
     }
     return Passageiro();
 }
 
-void listar_Embarques(vector<Embarque> &embarques){
+void listar_Embarques(vector<Embarque> &embarques)
+{
     int i = 1;
     cout << "==========Dados dos Embarques==========\n\n";
     for (Embarque embarque : embarques)
@@ -1525,27 +1520,31 @@ void listar_Embarques(vector<Embarque> &embarques){
     }
 }
 
-bool valida_data(string& data) {
-        /**
-         * valida_data: Esta função valida o data utilizando um regex.
-         * Paramentro data do tipo string .
-         * retorna true ou false.
-         */
+bool valida_data(string &data)
+{
+    /**
+     * valida_data: Esta função valida o data utilizando um regex.
+     * Paramentro data do tipo string .
+     * retorna true ou false.
+     */
     regex datePattern(R"(\d{2}/\d{2}/\d{4})");
 
     return regex_match(data, datePattern);
 };
 
-bool verifica_apolice_cadastro(vector<Embarque> &embarques, string& apolice) {
-    for (Embarque embarque : embarques){
-        if(embarque.ocorrencia.numero_Apolice == apolice){
+bool verifica_apolice_cadastro(vector<Embarque> &embarques, string &apolice)
+{
+    for (Embarque embarque : embarques)
+    {
+        if (embarque.ocorrencia.numero_Apolice == apolice)
+        {
             return true;
         }
     }
-    return  false;
+    return false;
 };
 
-void gerar_ocorrencia(vector<Embarque> &embarques,  Ocorrencia& ocorrencia)
+void gerar_ocorrencia(vector<Embarque> &embarques, Ocorrencia &ocorrencia)
 {
     Embarque e;
 
@@ -1553,7 +1552,8 @@ void gerar_ocorrencia(vector<Embarque> &embarques,  Ocorrencia& ocorrencia)
     string cpf;
     bool verifica_embarques;
 
-    do{
+    do
+    {
         cout << "========== Dados da ocorrencia ==========\n";
         cout << "Digite o codigo do roteiro: ";
         cin >> codigo;
@@ -1561,21 +1561,25 @@ void gerar_ocorrencia(vector<Embarque> &embarques,  Ocorrencia& ocorrencia)
         cout << "Digite o CPF do passageiro: ";
         cin >> cpf;
 
-        if (verifica_Embarque(embarques, cpf, codigo)) {
+        if (verifica_Embarque(embarques, cpf, codigo))
+        {
             verifica_embarques = false;
             cout << "Não encontramos essa embarque!" << endl;
             limparBuffers();
             pause();
-        // Saia da função se a ocorrência não foi encontrada.
-        }else{
+            // Saia da função se a ocorrência não foi encontrada.
+        }
+        else
+        {
             verifica_embarques = true;
 
             cout << "========== Dados do Roteiro ==========\n";
             cout << "Digite a descrição da ocorrência: ";
             cin.ignore(); // Limpe o buffer do teclado antes de ler a descrição.
-            getline(cin, ocorrencia.Descricao); 
+            getline(cin, ocorrencia.Descricao);
 
-            do{
+            do
+            {
                 cout << "Digite o numero da apólice: ";
                 cin >> ocorrencia.numero_Apolice;
                 if (verifica_apolice_cadastro(embarques, ocorrencia.numero_Apolice))
@@ -1586,17 +1590,20 @@ void gerar_ocorrencia(vector<Embarque> &embarques,  Ocorrencia& ocorrencia)
                 }
             } while (verifica_apolice_cadastro(embarques, ocorrencia.numero_Apolice));
 
-            do{
+            do
+            {
                 cout << "Digite a Data da ocorrência (formato: DD/MM/AAAA): ";
                 cin >> ocorrencia.data;
-                if(!valida_data(ocorrencia.data)){
-                    cout << "Nascimento do passageiro invalida tente novamente." <<endl;
+                if (!valida_data(ocorrencia.data))
+                {
+                    cout << "Nascimento do passageiro invalida tente novamente." << endl;
                     limparBuffers();
                     pause();
                 }
             } while (!valida_data(ocorrencia.data));
 
-            do{
+            do
+            {
                 cout << "Digite a hora da ocorrência(00:00): ";
                 cin >> ocorrencia.hora;
                 if (!valida_horario(ocorrencia.hora))
@@ -1607,19 +1614,19 @@ void gerar_ocorrencia(vector<Embarque> &embarques,  Ocorrencia& ocorrencia)
                 }
             } while (!valida_horario(ocorrencia.hora));
 
-            for (Embarque& e : embarques) {
-                if (e.cpf_passageiro == cpf && e.codigo_roteiro == codigo) {
+            for (Embarque &e : embarques)
+            {
+                if (e.cpf_passageiro == cpf && e.codigo_roteiro == codigo)
+                {
                     e.ocorrencia = ocorrencia;
                     std::cout << "Ocorrência cadastrada com sucesso!" << std::endl;
                 }
             }
             cout << "======================================\n\n";
             cout << "Ocorrencia cadastrado com sucesso!" << endl;
-
         };
-    }while(verifica_embarques != true);
+    } while (verifica_embarques != true);
 };
-
 
 bool remover_ocorrencia(vector<Embarque> &embarques)
 {
@@ -1632,30 +1639,151 @@ bool remover_ocorrencia(vector<Embarque> &embarques)
 
     cout << "Digite o codigo do roteiro que deseja remover: ";
     cin >> codigo;
-        for (int i = 0; i < tamanho; i++ ){
-            if (embarques[i].cpf_passageiro == cpf && embarques[i].codigo_roteiro == codigo){
+    for (int i = 0; i < tamanho; i++)
+    {
+        if (embarques[i].cpf_passageiro == cpf && embarques[i].codigo_roteiro == codigo)
+        {
 
-                cout << "Dados da Ocorrencia removidos: !\n";
-                cout << "======================================\n";
-                //chama a função aqui, imprimir
-                cout << "======================================\n\n";
-                cout << "Deseja realmente remover o embarque?\n";
-                cout << "1 - Sim\n";
-                cout << "2 - Nao\n";
-                cout << "OBS: Digite 1 ou 2, caso contrario sera considerado como Nao!\n";
-                cin >> opcao;
+            cout << "Dados da Ocorrencia removidos: !\n";
+            cout << "======================================\n";
+            // chama a função aqui, imprimir
+            cout << "======================================\n\n";
+            cout << "Deseja realmente remover o embarque?\n";
+            cout << "1 - Sim\n";
+            cout << "2 - Nao\n";
+            cout << "OBS: Digite 1 ou 2, caso contrario sera considerado como Nao!\n";
+            cin >> opcao;
 
-                if(opcao == 1){
-                    embarques[i].ocorrencia.Descricao = " ";
-                    embarques[i].ocorrencia.data = " ";
-                    embarques[i].ocorrencia.hora = " ";
-                    embarques[i].ocorrencia.numero_Apolice = " ";
+            if (opcao == 1)
+            {
+                embarques[i].ocorrencia.Descricao = " ";
+                embarques[i].ocorrencia.data = " ";
+                embarques[i].ocorrencia.hora = " ";
+                embarques[i].ocorrencia.numero_Apolice = " ";
 
-                    return true;
-                };
+                return true;
             };
         };
+    };
     return false;
+}
+
+
+void listar_ocorrenciaPorCPF(vector<Embarque> &embarques)
+{
+    string cpf;
+
+    cout << "Digite o CPF do passageiro: ";
+    cin >> cpf;
+
+    cout << "==========Dados dos Ocorrencia========== \n\n"
+         << endl;
+    for (Embarque embarque : embarques)
+    {
+        if (embarque.cpf_passageiro == cpf)
+        {
+            cout << "CPF " << embarque.cpf_passageiro << endl;
+            cout << "Descricao " << embarque.ocorrencia.Descricao << endl;
+            cout << "Data " << embarque.ocorrencia.data << endl;
+            cout << "Hora " << embarque.ocorrencia.hora << endl;
+            cout << "num Apolice " << embarque.ocorrencia.numero_Apolice << endl;
+        }
+    }
+    cout << "=============================================\n\n";
+}
+/////////////////////////////////////
+
+void alterar_OcorrenciaPorCPF(vector<Embarque> &embarques)
+{
+    string cpf;
+    int codigo;
+    bool encontrou_embarque = false;
+
+    cout << "========== Alterar Ocorrência ==========\n";
+    cout << "Digite o CPF do passageiro: ";
+    cin >> cpf;
+
+    cout << "Digite o código do roteiro: ";
+    cin >> codigo;
+
+    // Procurar pelo embarque correspondente
+    for (Embarque &e : embarques)
+    {
+        if (e.cpf_passageiro == cpf && e.codigo_roteiro == codigo)
+        {
+            encontrou_embarque = true;
+
+            cout << "\n========== Dados da Ocorrência ==========\n";
+            cout << "Descrição atual da ocorrência: " << e.ocorrencia.Descricao << endl;
+            cout << "Deseja alterar a descrição? (S/N): ";
+            char opcao;
+            cin >> opcao;
+
+            if (opcao == 'S' || opcao == 's')
+            {
+                cout << "Digite a nova descrição da ocorrência: ";
+                cin.ignore();
+                getline(cin, e.ocorrencia.Descricao);
+            }
+
+            cout << "Data atual da ocorrência: " << e.ocorrencia.data << endl;
+            cout << "Deseja alterar a data? (S/N): ";
+            cin >> opcao;
+
+            if (opcao == 'S' || opcao == 's')
+            {
+                do
+                {
+                    cout << "Digite a nova data da ocorrência (formato: DD/MM/AAAA): ";
+                    cin >> e.ocorrencia.data;
+                } while (!valida_data(e.ocorrencia.data));
+            }
+
+            cout << "Número da apólice atual: " << e.ocorrencia.numero_Apolice << endl;
+            cout << "Deseja alterar o número da apólice? (S/N): ";
+            cin >> opcao;
+
+            if (opcao == 'S' || opcao == 's')
+            {
+                do
+                {
+                    cout << "Digite o novo número da apólice: ";
+                    cin >> e.ocorrencia.numero_Apolice;
+                } while (!verifica_apolice_cadastro(embarques, e.ocorrencia.numero_Apolice));
+            }
+
+            cout << "Ocorrência alterada com sucesso!" << endl;
+            break;
+        }
+    }
+
+    if (!encontrou_embarque)
+    {
+        cout << "Não encontramos esse embarque!" << endl;
+    }
+}
+
+void listar_ocorrenciaPorRoteiro(vector<Embarque> &embarques)
+{
+    int codigo;
+
+    cout << "Digite o codigo do Roteiro: ";
+    cin >> codigo;
+
+    cout << "==========Dados dos Ocorrencia========== \n\n"
+         << endl;
+    for (Embarque embarque : embarques)
+    {
+        if (embarque.codigo_roteiro == codigo)
+        {
+            cout << "CPF " << embarque.cpf_passageiro << endl;
+            cout << "Descricao " << embarque.ocorrencia.Descricao << endl;
+            cout << "Data " << embarque.ocorrencia.data << endl;
+            cout << "Hora " << embarque.ocorrencia.hora << endl;
+            cout << "num Apolice " << embarque.ocorrencia.numero_Apolice << endl;
+        }
+    }
+    cout << "=============================================\n\n";
 }
 
 // ###########################################################################
@@ -1673,109 +1801,3 @@ bool remover_ocorrencia(vector<Embarque> &embarques)
     16188894000
     46429599043
 */
-
-void listar_ocorrenciaPorCPF(vector<Embarque> &embarques)
-{
-    string cpf;
-
-    cout << "Digite o CPF do passageiro: ";
-    cin >> cpf;
-
-    cout << "==========Dados dos Ocorrencia========== \n\n" << endl;
-    for (Embarque embarque : embarques)
-    {
-        if(embarque.cpf_passageiro == cpf){
-            cout << "CPF "<< embarque.cpf_passageiro << endl;
-            cout << "Descricao "<< embarque.ocorrencia.Descricao << endl;
-            cout << "Data " << embarque.ocorrencia.data<< endl;
-            cout << "Hora "  << embarque.ocorrencia.hora<< endl;
-            cout << "num Apolice " << embarque.ocorrencia.numero_Apolice<< endl;
-        }
-    }
-    cout << "=============================================\n\n";
-}
-/////////////////////////////////////
-
-void alterar_OcorrenciaPorCPF(vector<Embarque> &embarques) 
-{
-    string cpf;
-    int codigo;
-    bool encontrou_embarque = false;
-
-    cout << "========== Alterar Ocorrência ==========\n";
-    cout << "Digite o CPF do passageiro: ";
-    cin >> cpf;
-
-    cout << "Digite o código do roteiro: ";
-    cin >> codigo;
-
-    // Procurar pelo embarque correspondente
-    for (Embarque &e : embarques) {
-        if (e.cpf_passageiro == cpf && e.codigo_roteiro == codigo) {
-            encontrou_embarque = true;
-
-            cout << "\n========== Dados da Ocorrência ==========\n";
-            cout << "Descrição atual da ocorrência: " << e.ocorrencia.Descricao << endl;
-            cout << "Deseja alterar a descrição? (S/N): ";
-            char opcao;
-            cin >> opcao;
-
-            if (opcao == 'S' || opcao == 's') {
-                cout << "Digite a nova descrição da ocorrência: ";
-                cin.ignore();
-                getline(cin, e.ocorrencia.Descricao);
-            }
-
-            cout << "Data atual da ocorrência: " << e.ocorrencia.data << endl;
-            cout << "Deseja alterar a data? (S/N): ";
-            cin >> opcao;
-
-            if (opcao == 'S' || opcao == 's') {
-                do {
-                    cout << "Digite a nova data da ocorrência (formato: DD/MM/AAAA): ";
-                    cin >> e.ocorrencia.data;
-                } while (!valida_data(e.ocorrencia.data));
-            }
-
-            cout << "Número da apólice atual: " << e.ocorrencia.numero_Apolice << endl;
-            cout << "Deseja alterar o número da apólice? (S/N): ";
-            cin >> opcao;
-
-            if (opcao == 'S' || opcao == 's') {
-                do {
-                    cout << "Digite o novo número da apólice: ";
-                    cin >> e.ocorrencia.numero_Apolice;
-                } while (!verifica_apolice_cadastro(embarques, e.ocorrencia.numero_Apolice));
-            }
-
-            cout << "Ocorrência alterada com sucesso!" << endl;
-            break;
-        }
-    }
-
-    if (!encontrou_embarque) {
-        cout << "Não encontramos esse embarque!" << endl;
-    }
-}
-
-
-void listar_ocorrenciaPorRoteiro(vector<Embarque> &embarques)
-{
-    int codigo;
-
-    cout << "Digite o codigo do Roteiro: ";
-    cin >> codigo;
-
-    cout << "==========Dados dos Ocorrencia========== \n\n" << endl;
-    for (Embarque embarque : embarques)
-    {
-        if(embarque.codigo_roteiro == codigo){
-            cout << "CPF "<< embarque.cpf_passageiro << endl;
-            cout << "Descricao "<< embarque.ocorrencia.Descricao << endl;
-            cout << "Data " << embarque.ocorrencia.data<< endl;
-            cout << "Hora " << embarque.ocorrencia.hora<< endl;
-            cout << "num Apolice " << embarque.ocorrencia.numero_Apolice<< endl;
-        }
-    }
-    cout << "=============================================\n\n";
-}
